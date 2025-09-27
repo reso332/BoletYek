@@ -1,3 +1,745 @@
-<html> 
-<h1>Hi The Web Loding.......</h1>
-</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التسجيل - Google</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary: #4285F4;
+            --success: #34A853;
+            --danger: #EA4335;
+            --warning: #FBBC05;
+            --dark: #202124;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #0d47a1);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .status-active {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .status-inactive {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .admin-panel, .user-panel {
+            display: none;
+        }
+        
+        .login-panel {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .code-input {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .code-input input {
+            flex: 1;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>نظام التسجيل عبر Google</h1>
+            <p>إدارة المستخدمين والأكواد الشخصية</p>
+        </header>
+        
+        <!-- لوحة تسجيل الدخول -->
+        <div id="login-panel" class="login-panel card">
+            <h2>تسجيل الدخول إلى النظام</h2>
+            <p>يجب تسجيل الدخول باستخدام حساب Google للمتابعة</p>
+            <div id="g_id_signin" class="btn" style="background: #4285F4; color: white; padding: 12px 24px; border-radius: 4px;"></div>
+        </div>
+        
+        <!-- لوحة المستخدم العادي -->
+        <div id="user-panel" class="user-panel">
+            <div class="user-info card">
+                <img id="user-avatar" class="user-avatar" src="" alt="صورة المستخدم">
+                <div>
+                    <h2 id="user-name">اسم المستخدم</h2>
+                    <p id="user-email">البريد الإلكتروني</p>
+                    <p>الكود الشخصي: <span id="user-personal-code" class="status-active">غير محدد</span></p>
+                </div>
+                <button class="btn btn-danger" onclick="signOut()">تسجيل الخروج</button>
+            </div>
+            
+            <div class="card">
+                <h3>إدخال الكود الشخصي</h3>
+                <div class="code-input">
+                    <input type="text" id="code-input" placeholder="أدخل الكود المخصص لك">
+                    <button class="btn" onclick="submitCode()">تأكيد الكود</button>
+                </div>
+                <div id="code-message"></div>
+            </div>
+            
+            <div class="card">
+                <h3>الأنشطة الأخيرة</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>النشاط</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-activities">
+                        <tr>
+                            <td colspan="3" style="text-align: center;">لا توجد أنشطة مسجلة</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- لوحة المدير -->
+        <div id="admin-panel" class="admin-panel">
+            <div class="user-info card">
+                <img id="admin-avatar" class="user-avatar" src="" alt="صورة المدير">
+                <div>
+                    <h2 id="admin-name">اسم المدير</h2>
+                    <p id="admin-email">بريد المدير الإلكتروني</p>
+                    <p><span class="status-success">مدير النظام</span></p>
+                </div>
+                <button class="btn btn-danger" onclick="signOut()">تسجيل الخروج</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('users-tab')">إدارة المستخدمين</div>
+                <div class="tab" onclick="switchTab('codes-tab')">إدارة الأكواد</div>
+                <div class="tab" onclick="switchTab('reports-tab')">التقارير</div>
+            </div>
+            
+            <!-- تبويب إدارة المستخدمين -->
+            <div id="users-tab" class="tab-content active">
+                <div class="card">
+                    <h3>قائمة المستخدمين</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم المستخدم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الكود الشخصي</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ التسجيل</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-list">
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>إضافة مستخدم جديد</h3>
+                    <input type="email" id="new-user-email" placeholder="البريد الإلكتروني للمستخدم">
+                    <button class="btn" onclick="addUser()">إضافة مستخدم</button>
+                </div>
+            </div>
+            
+            <!-- تبويب إدارة الأكواد -->
+            <div id="codes-tab" class="tab-content">
+                <div class="card">
+                    <h3>إنشاء أكواد جديدة</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="codes-count" placeholder="عدد الأكواد" min="1" max="50" value="5">
+                        <button class="btn" onclick="generateCodes()">إنشاء الأكواد</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>قائمة الأكواد</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الكود</th>
+                                    <th>المستخدم</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="codes-list">
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- تبويب التقارير -->
+            <div id="reports-tab" class="tab-content">
+                <div class="card">
+                    <h3>إحصائيات النظام</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 15px; background: #e8f4fd; border-radius: 10px;">
+                            <h3 id="total-users">0</h3>
+                            <p>إجمالي المستخدمين</p>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #e8f5e9; border-radius: 10px;">
+                            <h3 id="active-users">0</h3>
+                            <p>المستخدمين النشطين</p>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #fff3e0; border-radius: 10px;">
+                            <h3 id="total-codes">0</h3>
+                            <p>إجمالي الأكواد</p>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #ffebee; border-radius: 10px;">
+                            <h3 id="used-codes">0</h3>
+                            <p>الأكواد المستخدمة</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>آخر الأنشطة</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>المستخدم</th>
+                                    <th>النشاط</th>
+                                    <th>التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="system-activities">
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات وهمية للتجربة
+        let users = [
+            { id: 1, name: "أحمد محمد", email: "ahmed@example.com", code: "CODE123", status: "active", joinDate: "2023-10-01" },
+            { id: 2, name: "فاطمة علي", email: "fatima@example.com", code: "CODE456", status: "active", joinDate: "2023-10-05" },
+            { id: 3, name: "خالد إبراهيم", email: "khaled@example.com", code: "", status: "inactive", joinDate: "2023-10-10" }
+        ];
+        
+        let codes = [
+            { code: "CODE123", user: "أحمد محمد", status: "مستخدم", created: "2023-10-01" },
+            { code: "CODE456", user: "فاطمة علي", status: "مستخدم", created: "2023-10-05" },
+            { code: "CODE789", user: "", status: "غير مستخدم", created: "2023-10-15" },
+            { code: "CODE101", user: "", status: "غير مستخدم", created: "2023-10-15" }
+        ];
+        
+        let activities = [
+            { user: "أحمد محمد", action: "تسجيل الدخول", date: "2023-10-20 10:30" },
+            { user: "فاطمة علي", action: "استخدام الكود", date: "2023-10-19 15:45" },
+            { user: "المدير", action: "إنشاء أكواد جديدة", date: "2023-10-18 09:20" }
+        ];
+        
+        // تهيئة تسجيل الدخول بـ Google
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: "487544903475-l4hjabntdpa92jbqdp69omrc39hu23f9.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            
+            google.accounts.id.renderButton(
+                document.getElementById("g_id_signin"),
+                { 
+                    theme: "filled_blue", 
+                    size: "large", 
+                    text: "signin_with",
+                    shape: "pill",
+                    locale: "ar"
+                }
+            );
+            
+            // تحميل البيانات الوهمية
+            loadUsersData();
+            loadCodesData();
+            loadReportsData();
+        };
+        
+        // معالجة استجابة تسجيل الدخول
+        function handleCredentialResponse(response) {
+            const jwt = response.credential;
+            
+            // فك تشفير JWT للحصول على بيانات المستخدم
+            const base64Url = jwt.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            const user = JSON.parse(jsonPayload);
+            
+            // تخزين بيانات المستخدم
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            // التحقق إذا كان المستخدم مديراً
+            const isAdmin = user.email === "admin@example.com"; // يمكن تغيير هذا الشرط
+            
+            // عرض اللوحة المناسبة
+            document.getElementById('login-panel').style.display = 'none';
+            
+            if (isAdmin) {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-name').textContent = user.name;
+                document.getElementById('admin-email').textContent = user.email;
+                document.getElementById('admin-avatar').src = user.picture;
+            } else {
+                document.getElementById('user-panel').style.display = 'block';
+                document.getElementById('user-name').textContent = user.name;
+                document.getElementById('user-email').textContent = user.email;
+                document.getElementById('user-avatar').src = user.picture;
+                
+                // البحث عن المستخدم في القائمة وعرض كوده إذا وجد
+                const foundUser = users.find(u => u.email === user.email);
+                if (foundUser && foundUser.code) {
+                    document.getElementById('user-personal-code').textContent = foundUser.code;
+                }
+            }
+        }
+        
+        // تسجيل الخروج
+        function signOut() {
+            localStorage.removeItem('currentUser');
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('user-panel').style.display = 'none';
+            document.getElementById('login-panel').style.display = 'block';
+            
+            // تسجيل الخروج من Google
+            google.accounts.id.disableAutoSelect();
+        }
+        
+        // تحميل بيانات المستخدمين
+        function loadUsersData() {
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = '';
+            
+            users.forEach(user => {
+                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
+                const statusText = user.status === 'active' ? 'نشط' : 'غير نشط';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.code || 'لا يوجد'}</td>
+                    <td><span class="${statusClass}">${statusText}</span></td>
+                    <td>${user.joinDate}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="toggleUserStatus(${user.id})">${user.status === 'active' ? 'حظر' : 'تفعيل'}</button>
+                        <button class="btn btn-danger" onclick="deleteUser(${user.id})">حذف</button>
+                    </td>
+                `;
+                usersList.appendChild(row);
+            });
+        }
+        
+        // تحميل بيانات الأكواد
+        function loadCodesData() {
+            const codesList = document.getElementById('codes-list');
+            codesList.innerHTML = '';
+            
+            codes.forEach(code => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${code.code}</td>
+                    <td>${code.user || 'لا يوجد'}</td>
+                    <td>${code.status}</td>
+                    <td>${code.created}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteCode('${code.code}')">حذف</button>
+                    </td>
+                `;
+                codesList.appendChild(row);
+            });
+        }
+        
+        // تحميل بيانات التقارير
+        function loadReportsData() {
+            document.getElementById('total-users').textContent = users.length;
+            document.getElementById('active-users').textContent = users.filter(u => u.status === 'active').length;
+            document.getElementById('total-codes').textContent = codes.length;
+            document.getElementById('used-codes').textContent = codes.filter(c => c.status === 'مستخدم').length;
+            
+            const systemActivities = document.getElementById('system-activities');
+            systemActivities.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.user}</td>
+                    <td>${activity.action}</td>
+                    <td>${activity.date}</td>
+                `;
+                systemActivities.appendChild(row);
+            });
+        }
+        
+        // تبديل التبويبات
+        function switchTab(tabId) {
+            // إخفاء جميع المحتويات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إزالة النشط من جميع الألسنة
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إظهار المحتوى المحدد
+            document.getElementById(tabId).classList.add('active');
+            
+            // تعيين النشط للسان المحدد
+            event.target.classList.add('active');
+        }
+        
+        // إضافة مستخدم جديد
+        function addUser() {
+            const email = document.getElementById('new-user-email').value;
+            if (!email) {
+                alert('يرجى إدخال بريد إلكتروني');
+                return;
+            }
+            
+            // إضافة المستخدم الجديد
+            const newUser = {
+                id: users.length + 1,
+                name: email.split('@')[0],
+                email: email,
+                code: '',
+                status: 'active',
+                joinDate: new Date().toISOString().split('T')[0]
+            };
+            
+            users.push(newUser);
+            loadUsersData();
+            document.getElementById('new-user-email').value = '';
+            
+            // إضافة نشاط جديد
+            activities.unshift({
+                user: "المدير",
+                action: `إضافة مستخدم جديد: ${email}`,
+                date: new Date().toLocaleString('ar-SA')
+            });
+            
+            alert('تم إضافة المستخدم بنجاح');
+        }
+        
+        // تبديل حالة المستخدم
+        function toggleUserStatus(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.status = user.status === 'active' ? 'inactive' : 'active';
+                loadUsersData();
+                
+                // إضافة نشاط جديد
+                activities.unshift({
+                    user: "المدير",
+                    action: `تغيير حالة ${user.name} إلى ${user.status === 'active' ? 'نشط' : 'غير نشط'}`,
+                    date: new Date().toLocaleString('ar-SA')
+                });
+            }
+        }
+        
+        // حذف مستخدم
+        function deleteUser(userId) {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                users = users.filter(u => u.id !== userId);
+                loadUsersData();
+                
+                // إضافة نشاط جديد
+                activities.unshift({
+                    user: "المدير",
+                    action: `حذف مستخدم (ID: ${userId})`,
+                    date: new Date().toLocaleString('ar-SA')
+                });
+            }
+        }
+        
+        // إنشاء أكواد جديدة
+        function generateCodes() {
+            const count = parseInt(document.getElementById('codes-count').value) || 5;
+            
+            for (let i = 0; i < count; i++) {
+                const newCode = 'CODE' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                codes.push({
+                    code: newCode,
+                    user: '',
+                    status: 'غير مستخدم',
+                    created: new Date().toISOString().split('T')[0]
+                });
+            }
+            
+            loadCodesData();
+            
+            // إضافة نشاط جديد
+            activities.unshift({
+                user: "المدير",
+                action: `إنشاء ${count} كود جديد`,
+                date: new Date().toLocaleString('ar-SA')
+            });
+            
+            alert(`تم إنشاء ${count} كود جديد بنجاح`);
+        }
+        
+        // حذف كود
+        function deleteCode(code) {
+            if (confirm('هل أنت متأكد من حذف هذا الكود؟')) {
+                codes = codes.filter(c => c.code !== code);
+                loadCodesData();
+                
+                // إضافة نشاط جديد
+                activities.unshift({
+                    user: "المدير",
+                    action: `حذف الكود: ${code}`,
+                    date: new Date().toLocaleString('ar-SA')
+                });
+            }
+        }
+        
+        // إدخال الكود من قبل المستخدم
+        function submitCode() {
+            const codeInput = document.getElementById('code-input').value;
+            const codeMessage = document.getElementById('code-message');
+            
+            if (!codeInput) {
+                codeMessage.innerHTML = '<div class="alert alert-danger">يرجى إدخال كود</div>';
+                return;
+            }
+            
+            // البحث عن الكود
+            const code = codes.find(c => c.code === codeInput);
+            
+            if (!code) {
+                codeMessage.innerHTML = '<div class="alert alert-danger">الكود غير صحيح</div>';
+                return;
+            }
+            
+            if (code.status === 'مستخدم') {
+                codeMessage.innerHTML = '<div class="alert alert-danger">هذا الكود مستخدم مسبقاً</div>';
+                return;
+            }
+            
+            // الحصول على بيانات المستخدم الحالي
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // تعيين الكود للمستخدم
+            code.user = currentUser.name;
+            code.status = 'مستخدم';
+            
+            // تحديث كود المستخدم في القائمة
+            const user = users.find(u => u.email === currentUser.email);
+            if (user) {
+                user.code = codeInput;
+                document.getElementById('user-personal-code').textContent = codeInput;
+            }
+            
+            // تحديث واجهة المستخدم
+            loadCodesData();
+            codeMessage.innerHTML = '<div class="alert alert-success">تم تفعيل الكود بنجاح</div>';
+            document.getElementById('code-input').value = '';
+            
+            // إضافة نشاط جديد
+            activities.unshift({
+                user: currentUser.name,
+                action: `استخدام الكود: ${codeInput}`,
+                date: new Date().toLocaleString('ar-SA')
+            });
+            
+            // تحديث أنشطة المستخدم
+            const userActivities = document.getElementById('user-activities');
+            userActivities.innerHTML = `
+                <tr>
+                    <td>${new Date().toLocaleString('ar-SA')}</td>
+                    <td>استخدام الكود: ${codeInput}</td>
+                    <td><span class="status-active">ناجح</span></td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+  </html>
