@@ -6,6 +6,33 @@
     <title>نظام التسوق الإلكتروني</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOxBZ3rAibqyrx5FijwIHB0dVoSWzNaLI",
+            authDomain: "banki-38897.firebaseapp.com",
+            projectId: "banki-38897",
+            storageBucket: "banki-38897.firebasestorage.app",
+            messagingSenderId: "701224228209",
+            appId: "1:701224228209:web:dab38d7104697210b3d2d0",
+            measurementId: "G-FP17DEHFY2"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.firebaseDb = db;
+        window.firebaseMethods = {
+            collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot
+        };
+        
+        console.log("Firebase initialized successfully");
+    </script>
+    
     <style>
         :root {
             --primary: #2E86C1;
@@ -393,6 +420,7 @@
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
         
         .charge-form h2 {
@@ -408,6 +436,12 @@
             font-size: 24px;
             cursor: pointer;
             color: var(--gray);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         /* نافذة إدخال كود الأدمن */
@@ -435,6 +469,7 @@
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
         
         .admin-code-form h2 {
@@ -525,7 +560,7 @@
                         </div>
                     </div>
                     
-                    <div id="g_id_signin" class="login-btn">تسجيل الدخول</div>
+                    <div id="g_id_signin"></div>
                 </div>
             </div>
         </div>
@@ -626,7 +661,6 @@
     <!-- نافذة تعبئة المحفظة -->
     <div class="charge-modal" id="charge-modal">
         <div class="charge-form">
-            <span class="close-btn" onclick="closeChargeModal()">&times;</span>
             <h2>تعبئة المحفظة</h2>
             
             <div class="form-group">
@@ -634,7 +668,10 @@
                 <input type="text" id="charge-code-input" class="form-control" placeholder="أدخل كود الشحن">
             </div>
             
-            <button class="admin-btn" style="width: 100%;" onclick="useChargeCode()">تأكيد</button>
+            <div class="modal-buttons">
+                <button class="admin-btn" onclick="useChargeCode()">تأكيد</button>
+                <button class="admin-btn danger" onclick="closeChargeModal()">إغلاق</button>
+            </div>
             
             <div id="charge-message" style="margin-top: 15px;"></div>
         </div>
@@ -643,7 +680,6 @@
     <!-- نافذة إدخال كود الأدمن -->
     <div class="admin-code-modal" id="admin-code-modal">
         <div class="admin-code-form">
-            <span class="close-btn" onclick="closeAdminCodeModal()">&times;</span>
             <h2>إدخال كود الأدمن</h2>
             
             <div class="form-group">
@@ -651,7 +687,10 @@
                 <input type="text" id="admin-code-input" class="form-control" placeholder="أدخل كود الأدمن">
             </div>
             
-            <button class="admin-btn" style="width: 100%;" onclick="verifyAdminCode()">تأكيد</button>
+            <div class="modal-buttons">
+                <button class="admin-btn" onclick="verifyAdminCode()">تأكيد</button>
+                <button class="admin-btn danger" onclick="closeAdminCodeModal()">إغلاق</button>
+            </div>
             
             <div id="admin-code-message" style="margin-top: 15px;"></div>
         </div>
@@ -668,12 +707,100 @@
         // بيانات التطبيق
         let currentUser = null;
         let isAdmin = false;
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let chargeCodes = JSON.parse(localStorage.getItem('chargeCodes')) || [];
+        let users = [];
+        let products = [];
+        let chargeCodes = [];
+        
+        // تهيئة Firebase والبيانات
+        async function initializeAppData() {
+            try {
+                // انتظار تهيئة Firebase
+                await new Promise(resolve => {
+                    const checkFirebase = setInterval(() => {
+                        if (window.firebaseDb && window.firebaseMethods) {
+                            clearInterval(checkFirebase);
+                            resolve();
+                        }
+                    }, 100);
+                });
+                
+                // تحميل البيانات من Firebase
+                await loadDataFromFirebase();
+                console.log("تم تحميل البيانات من Firebase بنجاح");
+            } catch (error) {
+                console.error("خطأ في تحميل البيانات:", error);
+            }
+        }
+        
+        // تحميل البيانات من Firebase
+        async function loadDataFromFirebase() {
+            const { getDocs, collection } = window.firebaseMethods;
+            const db = window.firebaseDb;
+            
+            try {
+                // تحميل المستخدمين
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                users = [];
+                usersSnapshot.forEach(doc => {
+                    users.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // تحميل العروض
+                const productsSnapshot = await getDocs(collection(db, "products"));
+                products = [];
+                productsSnapshot.forEach(doc => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // تحميل أكواد الشحن
+                const codesSnapshot = await getDocs(collection(db, "chargeCodes"));
+                chargeCodes = [];
+                codesSnapshot.forEach(doc => {
+                    chargeCodes.push({ id: doc.id, ...doc.data() });
+                });
+                
+            } catch (error) {
+                console.error("خطأ في تحميل البيانات من Firebase:", error);
+            }
+        }
+        
+        // حفظ البيانات إلى Firebase
+        async function saveToFirebase(collectionName, data, docId = null) {
+            const { doc, setDoc } = window.firebaseMethods;
+            const db = window.firebaseDb;
+            
+            try {
+                if (docId) {
+                    await setDoc(doc(db, collectionName, docId), data);
+                    return docId;
+                } else {
+                    const newDocRef = doc(collection(db, collectionName));
+                    await setDoc(newDocRef, data);
+                    return newDocRef.id;
+                }
+            } catch (error) {
+                console.error("خطأ في حفظ البيانات إلى Firebase:", error);
+                throw error;
+            }
+        }
+        
+        // حذف بيانات من Firebase
+        async function deleteFromFirebase(collectionName, docId) {
+            const { doc, deleteDoc } = window.firebaseMethods;
+            const db = window.firebaseDb;
+            
+            try {
+                await deleteDoc(doc(db, collectionName, docId));
+            } catch (error) {
+                console.error("خطأ في حذف البيانات من Firebase:", error);
+                throw error;
+            }
+        }
         
         // تهيئة تسجيل الدخول بـ Google
-        window.onload = function() {
+        window.onload = async function() {
+            await initializeAppData();
+            
             google.accounts.id.initialize({
                 client_id: "487544903475-l4hjabntdpa92jbqdp69omrc39hu23f9.apps.googleusercontent.com",
                 callback: handleCredentialResponse
@@ -682,11 +809,12 @@
             google.accounts.id.renderButton(
                 document.getElementById("g_id_signin"),
                 { 
-                    theme: "filled_blue", 
+                    theme: "outline", 
                     size: "large", 
                     text: "signin_with",
-                    shape: "pill",
-                    locale: "ar"
+                    shape: "rectangular",
+                    locale: "ar",
+                    width: "200"
                 }
             );
             
@@ -697,7 +825,7 @@
         };
         
         // معالجة استجابة تسجيل الدخول
-        function handleCredentialResponse(response) {
+        async function handleCredentialResponse(response) {
             const jwt = response.credential;
             
             // فك تشفير JWT للحصول على بيانات المستخدم
@@ -715,7 +843,6 @@
             if (!user) {
                 // إنشاء مستخدم جديد
                 user = {
-                    id: generateId(),
                     name: userData.name,
                     email: userData.email,
                     picture: userData.picture,
@@ -724,8 +851,9 @@
                     isAdmin: false
                 };
                 
+                const userId = await saveToFirebase("users", user);
+                user.id = userId;
                 users.push(user);
-                localStorage.setItem('users', JSON.stringify(users));
             }
             
             currentUser = user;
@@ -805,26 +933,14 @@
             }, 3000);
         }
         
-        // توليد معرف فريد
-        function generateId() {
-            return Math.random().toString(36).substring(2) + Date.now().toString(36);
-        }
-        
         // تحميل العروض
         function loadOffers() {
             const offersGrid = document.getElementById('offers-grid');
-            
             offersGrid.innerHTML = '';
             
             if (products.length === 0) {
-                // إضافة عروض افتراضية إذا لم توجد
-                products = [
-                    { id: 1, name: 'عرض خاص', price: 100, icon: 'fas fa-gift' },
-                    { id: 2, name: 'خصم 20%', price: 150, icon: 'fas fa-percentage' },
-                    { id: 3, name: 'عرض موسمي', price: 200, icon: 'fas fa-sun' },
-                    { id: 4, name: 'عرض نهاية الأسبوع', price: 80, icon: 'fas fa-calendar-week' }
-                ];
-                localStorage.setItem('products', JSON.stringify(products));
+                offersGrid.innerHTML = '<p>لا توجد عروض متاحة حالياً</p>';
+                return;
             }
             
             products.forEach(product => {
@@ -832,12 +948,12 @@
                 offerCard.className = 'offer-card';
                 offerCard.innerHTML = `
                     <div class="offer-image">
-                        <i class="${product.icon}"></i>
+                        <i class="${product.icon || 'fas fa-gift'}"></i>
                     </div>
                     <div class="offer-content">
                         <h3 class="offer-title">${product.name}</h3>
                         <div class="offer-price">${product.price} ⬤</div>
-                        <button class="buy-btn" onclick="buyProduct(${product.id})">شراء الآن</button>
+                        <button class="buy-btn" onclick="buyProduct('${product.id}')">شراء الآن</button>
                     </div>
                 `;
                 offersGrid.appendChild(offerCard);
@@ -861,7 +977,7 @@
                     possessionCard.className = 'possession-card';
                     possessionCard.innerHTML = `
                         <div class="possession-image">
-                            <i class="${product.icon}"></i>
+                            <i class="${product.icon || 'fas fa-gift'}"></i>
                         </div>
                         <div class="possession-content">
                             <h3 class="possession-title">${product.name}</h3>
@@ -874,7 +990,7 @@
         }
         
         // شراء عرض
-        function buyProduct(productId) {
+        async function buyProduct(productId) {
             if (!currentUser) {
                 showMessage('يجب تسجيل الدخول أولاً', 'error');
                 return;
@@ -898,21 +1014,36 @@
                 return;
             }
             
-            currentUser.balance -= product.price;
-            currentUser.possessions.push(productId);
-            
-            updateUserData();
-            updateUI();
-            showMessage('تم شراء العرض بنجاح', 'success');
-        }
-        
-        // تحديث بيانات المستخدم
-        function updateUserData() {
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex] = currentUser;
-                localStorage.setItem('users', JSON.stringify(users));
+            try {
+                // خصم السعر من الرصيد
+                currentUser.balance -= product.price;
+                
+                // إضافة العرض إلى الممتلكات
+                currentUser.possessions.push(productId);
+                
+                // تحديث بيانات المستخدم في Firebase
+                await saveToFirebase("users", {
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    picture: currentUser.picture,
+                    balance: currentUser.balance,
+                    possessions: currentUser.possessions,
+                    isAdmin: currentUser.isAdmin
+                }, currentUser.id);
+                
+                // تحديث البيانات المحلية
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                }
+                
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                updateUI();
+                showMessage('تم شراء العرض بنجاح', 'success');
+            } catch (error) {
+                console.error("خطأ في شراء العرض:", error);
+                showMessage('حدث خطأ أثناء شراء العرض', 'error');
             }
         }
         
@@ -933,7 +1064,7 @@
         }
         
         // استخدام كود الشحن
-        function useChargeCode() {
+        async function useChargeCode() {
             const code = document.getElementById('charge-code-input').value;
             
             if (!code) {
@@ -956,19 +1087,39 @@
                 return;
             }
             
-            // إضافة القيمة إلى رصيد المستخدم
-            currentUser.balance += chargeCode.value;
-            
-            // تعليم الكود كمستخدم وحذفه من القائمة
-            chargeCode.used = true;
-            chargeCodes = chargeCodes.filter(c => c.code !== code); // حذف الكود المستخدم
-            
-            localStorage.setItem('chargeCodes', JSON.stringify(chargeCodes));
-            updateUserData();
-            updateUI();
-            
-            closeChargeModal();
-            showMessage(`تم تعبئة محفظتك بمبلغ ${chargeCode.value} ⬤ بنجاح`, 'success');
+            try {
+                // إضافة القيمة إلى رصيد المستخدم
+                currentUser.balance += chargeCode.value;
+                
+                // تحديث بيانات المستخدم في Firebase
+                await saveToFirebase("users", {
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    picture: currentUser.picture,
+                    balance: currentUser.balance,
+                    possessions: currentUser.possessions,
+                    isAdmin: currentUser.isAdmin
+                }, currentUser.id);
+                
+                // تعليم الكود كمستخدم وحذفه من Firebase
+                await deleteFromFirebase("chargeCodes", chargeCode.id);
+                chargeCodes = chargeCodes.filter(c => c.id !== chargeCode.id);
+                
+                // تحديث البيانات المحلية
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                }
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                closeChargeModal();
+                updateUI();
+                showMessage(`تم تعبئة محفظتك بمبلغ ${chargeCode.value} ⬤ بنجاح`, 'success');
+            } catch (error) {
+                console.error("خطأ في استخدام كود الشحن:", error);
+                showMessage('حدث خطأ أثناء تعبئة المحفظة', 'error');
+            }
         }
         
         // فتح نافذة إدخال كود الأدمن
@@ -985,14 +1136,23 @@
         }
         
         // التحقق من كود الأدمن
-        function verifyAdminCode() {
+        async function verifyAdminCode() {
             const adminCode = document.getElementById('admin-code-input').value;
             
             if (adminCode === '5GHJKO3') {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
                 currentUser.isAdmin = true;
-                updateUserData();
+                
+                // تحديث بيانات المستخدم في Firebase
+                await saveToFirebase("users", {
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    picture: currentUser.picture,
+                    balance: currentUser.balance,
+                    possessions: currentUser.possessions,
+                    isAdmin: true
+                }, currentUser.id);
                 
                 closeAdminCodeModal();
                 updateUI();
@@ -1005,23 +1165,17 @@
         
         // تبديل تبويبات الإدارة
         function switchAdminTab(tabId) {
-            // إخفاء جميع المحتويات
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // إزالة النشط من جميع الألسنة
             document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // إظهار المحتوى المحدد
             document.getElementById(tabId).classList.add('active');
-            
-            // تعيين النشط للسان المحدد
             event.target.classList.add('active');
             
-            // تحميل البيانات الخاصة بالتبويب
             if (tabId === 'codes-tab') {
                 loadChargeCodes();
             } else if (tabId === 'products-tab') {
@@ -1064,7 +1218,7 @@
                 productItem.className = 'product-item';
                 productItem.innerHTML = `
                     <div>${product.name} - ${product.price} ⬤</div>
-                    <button class="admin-btn danger" onclick="deleteProduct(${product.id})">حذف</button>
+                    <button class="admin-btn danger" onclick="deleteProduct('${product.id}')">حذف</button>
                 `;
                 adminProductsList.appendChild(productItem);
             });
@@ -1087,7 +1241,7 @@
         }
         
         // إنشاء كود شحن
-        function generateChargeCode() {
+        async function generateChargeCode() {
             const code = document.getElementById('charge-code').value;
             const value = parseInt(document.getElementById('charge-value').value);
             
@@ -1096,30 +1250,35 @@
                 return;
             }
             
-            // التحقق إذا كان الكود موجوداً بالفعل
             if (chargeCodes.find(c => c.code === code)) {
                 showMessage('هذا الكود موجود بالفعل', 'error');
                 return;
             }
             
-            const chargeCode = {
-                code: code,
-                value: value,
-                used: false
-            };
-            
-            chargeCodes.push(chargeCode);
-            localStorage.setItem('chargeCodes', JSON.stringify(chargeCodes));
-            
-            document.getElementById('charge-code').value = '';
-            document.getElementById('charge-value').value = '';
-            
-            loadChargeCodes();
-            showMessage('تم إنشاء كود الشحن بنجاح', 'success');
+            try {
+                const chargeCode = {
+                    code: code,
+                    value: value,
+                    used: false
+                };
+                
+                const codeId = await saveToFirebase("chargeCodes", chargeCode);
+                chargeCode.id = codeId;
+                chargeCodes.push(chargeCode);
+                
+                document.getElementById('charge-code').value = '';
+                document.getElementById('charge-value').value = '';
+                
+                loadChargeCodes();
+                showMessage('تم إنشاء كود الشحن بنجاح', 'success');
+            } catch (error) {
+                console.error("خطأ في إنشاء كود الشحن:", error);
+                showMessage('حدث خطأ أثناء إنشاء كود الشحن', 'error');
+            }
         }
         
         // إضافة عرض
-        function addProduct() {
+        async function addProduct() {
             const name = document.getElementById('product-name').value;
             const price = parseInt(document.getElementById('product-price').value);
             
@@ -1128,51 +1287,70 @@
                 return;
             }
             
-            const product = {
-                id: generateId(),
-                name: name,
-                price: price,
-                icon: 'fas fa-gift'
-            };
-            
-            products.push(product);
-            localStorage.setItem('products', JSON.stringify(products));
-            
-            document.getElementById('product-name').value = '';
-            document.getElementById('product-price').value = '';
-            
-            loadOffers();
-            loadAdminProducts();
-            showMessage('تم إضافة العرض بنجاح', 'success');
-        }
-        
-        // حذف عرض
-        function deleteProduct(productId) {
-            if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
-                products = products.filter(p => p.id !== productId);
-                localStorage.setItem('products', JSON.stringify(products));
+            try {
+                const product = {
+                    name: name,
+                    price: price,
+                    icon: 'fas fa-gift'
+                };
                 
-                // إزالة العرض من ممتلكات جميع المستخدمين
-                users.forEach(user => {
-                    user.possessions = user.possessions.filter(p => p !== productId);
-                });
-                localStorage.setItem('users', JSON.stringify(users));
+                const productId = await saveToFirebase("products", product);
+                product.id = productId;
+                products.push(product);
                 
-                // تحديث بيانات المستخدم الحالي إذا كان يمتلك العرض
-                if (currentUser && currentUser.possessions.includes(productId)) {
-                    currentUser.possessions = currentUser.possessions.filter(p => p !== productId);
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                }
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-price').value = '';
                 
                 loadOffers();
                 loadAdminProducts();
-                loadPossessions();
-                showMessage('تم حذف العرض بنجاح', 'success');
+                showMessage('تم إضافة العرض بنجاح', 'success');
+            } catch (error) {
+                console.error("خطأ في إضافة العرض:", error);
+                showMessage('حدث خطأ أثناء إضافة العرض', 'error');
+            }
+        }
+        
+        // حذف عرض
+        async function deleteProduct(productId) {
+            if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
+                try {
+                    await deleteFromFirebase("products", productId);
+                    products = products.filter(p => p.id !== productId);
+                    
+                    // إزالة العرض من ممتلكات جميع المستخدمين
+                    for (const user of users) {
+                        if (user.possessions.includes(productId)) {
+                            user.possessions = user.possessions.filter(p => p !== productId);
+                            await saveToFirebase("users", {
+                                name: user.name,
+                                email: user.email,
+                                picture: user.picture,
+                                balance: user.balance,
+                                possessions: user.possessions,
+                                isAdmin: user.isAdmin
+                            }, user.id);
+                        }
+                    }
+                    
+                    // تحديث بيانات المستخدم الحالي إذا كان يمتلك العرض
+                    if (currentUser && currentUser.possessions.includes(productId)) {
+                        currentUser.possessions = currentUser.possessions.filter(p => p !== productId);
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    }
+                    
+                    loadOffers();
+                    loadAdminProducts();
+                    loadPossessions();
+                    showMessage('تم حذف العرض بنجاح', 'success');
+                } catch (error) {
+                    console.error("خطأ في حذف العرض:", error);
+                    showMessage('حدث خطأ أثناء حذف العرض', 'error');
+                }
             }
         }
         
         // تصفير أموال مستخدم
-        function resetUserMoney() {
+        async function resetUserMoney() {
             const userId = document.getElementById('user-id').value;
             
             if (!userId) {
@@ -1187,85 +1365,129 @@
                 return;
             }
             
-            user.balance = 0;
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // إذا كان المستخدم الحالي هو المستخدم المطلوب
-            if (currentUser && currentUser.id === userId) {
-                currentUser.balance = 0;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateUI();
-            }
-            
-            document.getElementById('user-id').value = '';
-            showMessage('تم تصفير أموال المستخدم بنجاح', 'success');
-        }
-        
-        // تصفير عروض مستخدم
-        function resetUserProducts() {
-            const userId = document.getElementById('user-id').value;
-            
-            if (!userId) {
-                showMessage('يرجى إدخال ايدي المستخدم', 'error');
-                return;
-            }
-            
-            const user = users.find(u => u.id === userId);
-            
-            if (!user) {
-                showMessage('المستخدم غير موجود', 'error');
-                return;
-            }
-            
-            user.possessions = [];
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // إذا كان المستخدم الحالي هو المستخدم المطلوب
-            if (currentUser && currentUser.id === userId) {
-                currentUser.possessions = [];
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadPossessions();
-            }
-            
-            document.getElementById('user-id').value = '';
-            showMessage('تم تصفير عروض المستخدم بنجاح', 'success');
-        }
-        
-        // تصفير أموال الجميع
-        function resetAllMoney() {
-            if (confirm('هل أنت متأكد من تصفير أموال جميع المستخدمين؟')) {
-                users.forEach(user => {
-                    user.balance = 0;
-                });
+            try {
+                user.balance = 0;
+                await saveToFirebase("users", {
+                    name: user.name,
+                    email: user.email,
+                    picture: user.picture,
+                    balance: 0,
+                    possessions: user.possessions,
+                    isAdmin: user.isAdmin
+                }, user.id);
                 
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                if (currentUser) {
+                if (currentUser && currentUser.id === userId) {
                     currentUser.balance = 0;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     updateUI();
                 }
                 
-                showMessage('تم تصفير أموال جميع المستخدمين بنجاح', 'success');
+                document.getElementById('user-id').value = '';
+                showMessage('تم تصفير أموال المستخدم بنجاح', 'success');
+            } catch (error) {
+                console.error("خطأ في تصفير أموال المستخدم:", error);
+                showMessage('حدث خطأ أثناء تصفير الأموال', 'error');
             }
         }
         
-        // تصفير عروض الجميع
-        function resetAllProducts() {
-            if (confirm('هل أنت متأكد من تصفير عروض جميع المستخدمين؟')) {
-                users.forEach(user => {
-                    user.possessions = [];
-                });
+        // تصفير عروض مستخدم
+        async function resetUserProducts() {
+            const userId = document.getElementById('user-id').value;
+            
+            if (!userId) {
+                showMessage('يرجى إدخال ايدي المستخدم', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) {
+                showMessage('المستخدم غير موجود', 'error');
+                return;
+            }
+            
+            try {
+                user.possessions = [];
+                await saveToFirebase("users", {
+                    name: user.name,
+                    email: user.email,
+                    picture: user.picture,
+                    balance: user.balance,
+                    possessions: [],
+                    isAdmin: user.isAdmin
+                }, user.id);
                 
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                if (currentUser) {
+                if (currentUser && currentUser.id === userId) {
                     currentUser.possessions = [];
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     loadPossessions();
                 }
                 
-                showMessage('تم تصفير عروض جميع المستخدمين بنجاح', 'success');
+                document.getElementById('user-id').value = '';
+                showMessage('تم تصفير عروض المستخدم بنجاح', 'success');
+            } catch (error) {
+                console.error("خطأ في تصفير عروض المستخدم:", error);
+                showMessage('حدث خطأ أثناء تصفير العروض', 'error');
+            }
+        }
+        
+        // تصفير أموال الجميع
+        async function resetAllMoney() {
+            if (confirm('هل أنت متأكد من تصفير أموال جميع المستخدمين؟')) {
+                try {
+                    for (const user of users) {
+                        user.balance = 0;
+                        await saveToFirebase("users", {
+                            name: user.name,
+                            email: user.email,
+                            picture: user.picture,
+                            balance: 0,
+                            possessions: user.possessions,
+                            isAdmin: user.isAdmin
+                        }, user.id);
+                    }
+                    
+                    if (currentUser) {
+                        currentUser.balance = 0;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        updateUI();
+                    }
+                    
+                    showMessage('تم تصفير أموال جميع المستخدمين بنجاح', 'success');
+                } catch (error) {
+                    console.error("خطأ في تصفير أموال الجميع:", error);
+                    showMessage('حدث خطأ أثناء تصفير الأموال', 'error');
+                }
+            }
+        }
+        
+        // تصفير عروض الجميع
+        async function resetAllProducts() {
+            if (confirm('هل أنت متأكد من تصفير عروض جميع المستخدمين؟')) {
+                try {
+                    for (const user of users) {
+                        user.possessions = [];
+                        await saveToFirebase("users", {
+                            name: user.name,
+                            email: user.email,
+                            picture: user.picture,
+                            balance: user.balance,
+                            possessions: [],
+                            isAdmin: user.isAdmin
+                        }, user.id);
+                    }
+                    
+                    if (currentUser) {
+                        currentUser.possessions = [];
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        loadPossessions();
+                    }
+                    
+                    showMessage('تم تصفير عروض جميع المستخدمين بنجاح', 'success');
+                } catch (error) {
+                    console.error("خطأ في تصفير عروض الجميع:", error);
+                    showMessage('حدث خطأ أثناء تصفير العروض', 'error');
+                }
             }
         }
         
@@ -1282,4 +1504,4 @@
         });
     </script>
 </body>
-     </html>
+    </html>
