@@ -1,18 +1,21 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التسجيل - Google</title>
+    <title>نظام التسوق الإلكتروني</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4285F4;
-            --success: #34A853;
-            --danger: #EA4335;
-            --warning: #FBBC05;
-            --dark: #202124;
-            --light: #f8f9fa;
+            --primary: #2E86C1;
+            --secondary: #17A2B8;
+            --success: #28A745;
+            --danger: #DC3545;
+            --warning: #FFC107;
+            --dark: #343A40;
+            --light: #F8F9FA;
+            --gray: #6C757D;
         }
         
         * {
@@ -23,7 +26,7 @@
         }
         
         body {
-            background-color: #f5f5f5;
+            background-color: #f5f7fa;
             color: #333;
             line-height: 1.6;
         }
@@ -31,151 +34,307 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 15px;
         }
         
+        /* الهيدر */
         header {
-            background: linear-gradient(135deg, var(--primary), #0d47a1);
+            background: linear-gradient(135deg, var(--primary), #1B4F72);
             color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1, h2, h3 {
-            margin-bottom: 15px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary);
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-left: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .balance {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .user-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            background: white;
+            color: #333;
+            width: 200px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .user-menu.active {
+            display: block;
+        }
+        
+        .user-menu a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-menu a:hover {
+            background: #f5f5f5;
+        }
+        
+        .user-menu a:last-child {
+            border-bottom: none;
+        }
+        
+        .login-btn {
+            background: var(--success);
             color: white;
             border: none;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: all 0.3s ease;
-            margin: 5px;
+            transition: background 0.3s;
         }
         
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+        .login-btn:hover {
+            background: #218838;
         }
         
-        .btn-success {
-            background-color: var(--success);
+        /* المحتوى الرئيسي */
+        .main-content {
+            padding: 30px 0;
+            min-height: calc(100vh - 160px);
         }
         
-        .btn-danger {
-            background-color: var(--danger);
-        }
-        
-        .btn-warning {
-            background-color: var(--warning);
-            color: #333;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        
-        th, td {
-            padding: 12px 15px;
-            text-align: right;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .status-active {
-            color: var(--success);
-            font-weight: bold;
-        }
-        
-        .status-inactive {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
-        .admin-panel, .user-panel {
-            display: none;
-        }
-        
-        .login-panel {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .code-input {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .code-input input {
-            flex: 1;
-        }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .tabs {
-            display: flex;
+        .section-title {
+            font-size: 24px;
             margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--dark);
         }
         
-        .tab {
+        /* قسم العروض */
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .offer-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .offer-image {
+            height: 160px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        
+        .offer-content {
+            padding: 15px;
+        }
+        
+        .offer-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .offer-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .buy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .buy-btn:hover {
+            background: #1B4F72;
+        }
+        
+        /* قسم المنتجات */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-image {
+            height: 160px;
+            background: linear-gradient(45deg, var(--secondary), var(--success));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        
+        .product-content {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        /* قسم الممتلكات */
+        .possessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .possession-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .possession-image {
+            height: 140px;
+            background: linear-gradient(45deg, var(--warning), var(--danger));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        
+        .possession-content {
+            padding: 15px;
+        }
+        
+        .possession-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        /* لوحة الإدارة */
+        .admin-panel {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .admin-tab {
             padding: 10px 20px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
         }
         
-        .tab.active {
+        .admin-tab.active {
             border-bottom: 3px solid var(--primary);
             font-weight: bold;
         }
@@ -188,233 +347,328 @@
             display: block;
         }
         
-        .user-info {
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .admin-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        .admin-btn:hover {
+            background: #1B4F72;
+        }
+        
+        .admin-btn.danger {
+            background: var(--danger);
+        }
+        
+        .admin-btn.danger:hover {
+            background: #BD2130;
+        }
+        
+        .users-list, .codes-list, .products-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .user-item, .code-item, .product-item {
             display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-item:last-child, .code-item:last-child, .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* نافذة إدخال كود الأدمن */
+        .admin-code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+        }
+        
+        .admin-code-modal.active {
+            display: flex;
+        }
+        
+        .admin-code-form {
+            background: white;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .admin-code-form h2 {
+            text-align: center;
             margin-bottom: 20px;
+            color: var(--primary);
         }
         
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--primary);
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
         }
         
+        /* الفوتر */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        /* رسائل التنبيه */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* التجاوب مع الشاشات الصغيرة */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
             }
             
-            table {
-                font-size: 14px;
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
             }
             
-            th, td {
-                padding: 8px 10px;
+            .user-section {
+                order: 2;
+            }
+            
+            .logo {
+                order: 1;
+            }
+            
+            .offers-grid, .products-grid, .possessions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
             }
         }
     </style>
 </head>
 <body>
+    <!-- الهيدر -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-store"></i>
+                    متجرنا الإلكتروني
+                </div>
+                
+                <div class="nav-links">
+                    <a href="#offers">العروض</a>
+                    <a href="#products">المنتجات</a>
+                    <a href="#possessions">ممتلكاتي</a>
+                </div>
+                
+                <div class="user-section">
+                    <div class="balance" id="user-balance">0 <i class="fas fa-coins"></i></div>
+                    
+                    <div class="user-profile" id="user-profile" style="display: none;">
+                        <img id="user-avatar" class="user-avatar" alt="صورة المستخدم">
+                        <span id="user-name"></span>
+                        <div class="user-menu" id="user-menu">
+                            <a href="#" id="admin-login-btn">تسجيل كأدمن</a>
+                            <a href="#" onclick="signOut()">تسجيل الخروج</a>
+                        </div>
+                    </div>
+                    
+                    <div id="g_id_signin" class="login-btn">تسجيل الدخول</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
     <div class="container">
-        <header>
-            <h1>نظام التسجيل عبر Google</h1>
-            <p>إدارة المستخدمين والأكواد الشخصية</p>
-        </header>
-        
-        <!-- لوحة تسجيل الدخول -->
-        <div id="login-panel" class="login-panel card">
-            <h2>تسجيل الدخول إلى النظام</h2>
-            <p>يجب تسجيل الدخول باستخدام حساب Google للمتابعة</p>
-            <div id="g_id_signin" class="btn" style="background: #4285F4; color: white; padding: 12px 24px; border-radius: 4px;"></div>
-        </div>
-        
-        <!-- لوحة المستخدم العادي -->
-        <div id="user-panel" class="user-panel">
-            <div class="user-info card">
-                <img id="user-avatar" class="user-avatar" src="" alt="صورة المستخدم">
-                <div>
-                    <h2 id="user-name">اسم المستخدم</h2>
-                    <p id="user-email">البريد الإلكتروني</p>
-                    <p>الكود الشخصي: <span id="user-personal-code" class="status-active">غير محدد</span></p>
+        <div class="main-content">
+            <!-- قسم العروض -->
+            <section id="offers">
+                <h2 class="section-title">العروض الحصرية</h2>
+                <div class="offers-grid" id="offers-grid">
+                    <!-- سيتم ملؤها بالعروض -->
                 </div>
-                <button class="btn btn-danger" onclick="signOut()">تسجيل الخروج</button>
-            </div>
+            </section>
             
-            <div class="card">
-                <h3>إدخال الكود الشخصي</h3>
-                <div class="code-input">
-                    <input type="text" id="code-input" placeholder="أدخل الكود المخصص لك">
-                    <button class="btn" onclick="submitCode()">تأكيد الكود</button>
+            <!-- قسم المنتجات -->
+            <section id="products">
+                <h2 class="section-title">المنتجات المتاحة</h2>
+                <div class="products-grid" id="products-grid">
+                    <!-- سيتم ملؤها بالمنتجات -->
                 </div>
-                <div id="code-message"></div>
-            </div>
+            </section>
             
-            <div class="card">
-                <h3>الأنشطة الأخيرة</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>النشاط</th>
-                            <th>الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-activities">
-                        <tr>
-                            <td colspan="3" style="text-align: center;">لا توجد أنشطة مسجلة</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- لوحة المدير -->
-        <div id="admin-panel" class="admin-panel">
-            <div class="user-info card">
-                <img id="admin-avatar" class="user-avatar" src="" alt="صورة المدير">
-                <div>
-                    <h2 id="admin-name">اسم المدير</h2>
-                    <p id="admin-email">بريد المدير الإلكتروني</p>
-                    <p><span class="status-success">مدير النظام</span></p>
+            <!-- قسم الممتلكات -->
+            <section id="possessions">
+                <h2 class="section-title">ممتلكاتي</h2>
+                <div class="possessions-grid" id="possessions-grid">
+                    <!-- سيتم ملؤها بالممتلكات -->
                 </div>
-                <button class="btn btn-danger" onclick="signOut()">تسجيل الخروج</button>
-            </div>
+            </section>
             
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('users-tab')">إدارة المستخدمين</div>
-                <div class="tab" onclick="switchTab('codes-tab')">إدارة الأكواد</div>
-                <div class="tab" onclick="switchTab('reports-tab')">التقارير</div>
-            </div>
-            
-            <!-- تبويب إدارة المستخدمين -->
-            <div id="users-tab" class="tab-content active">
-                <div class="card">
-                    <h3>قائمة المستخدمين</h3>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>اسم المستخدم</th>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>الكود الشخصي</th>
-                                    <th>الحالة</th>
-                                    <th>تاريخ التسجيل</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-list">
-                                <!-- سيتم ملؤها بالبيانات -->
-                            </tbody>
-                        </table>
+            <!-- لوحة الإدارة -->
+            <div class="admin-panel" id="admin-panel">
+                <h2 class="section-title">لوحة الإدارة</h2>
+                
+                <div class="admin-tabs">
+                    <div class="admin-tab active" onclick="switchAdminTab('codes-tab')">أكواد الشحن</div>
+                    <div class="admin-tab" onclick="switchAdminTab('products-tab')">إدارة المنتجات</div>
+                    <div class="admin-tab" onclick="switchAdminTab('users-tab')">إدارة المستخدمين</div>
+                </div>
+                
+                <!-- تبويب أكواد الشحن -->
+                <div id="codes-tab" class="tab-content active">
+                    <div class="form-group">
+                        <label for="charge-code">كود الشحن:</label>
+                        <input type="text" id="charge-code" class="form-control" placeholder="أدخل الكود">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="charge-value">قيمة الشحن:</label>
+                        <input type="number" id="charge-value" class="form-control" placeholder="أدخل القيمة">
+                    </div>
+                    
+                    <button class="admin-btn" onclick="generateChargeCode()">إنشاء كود شحن</button>
+                    
+                    <h3 style="margin: 20px 0 10px;">الأكواد المنشأة</h3>
+                    <div class="codes-list" id="codes-list">
+                        <!-- سيتم ملؤها بالأكواد -->
                     </div>
                 </div>
                 
-                <div class="card">
-                    <h3>إضافة مستخدم جديد</h3>
-                    <input type="email" id="new-user-email" placeholder="البريد الإلكتروني للمستخدم">
-                    <button class="btn" onclick="addUser()">إضافة مستخدم</button>
-                </div>
-            </div>
-            
-            <!-- تبويب إدارة الأكواد -->
-            <div id="codes-tab" class="tab-content">
-                <div class="card">
-                    <h3>إنشاء أكواد جديدة</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="number" id="codes-count" placeholder="عدد الأكواد" min="1" max="50" value="5">
-                        <button class="btn" onclick="generateCodes()">إنشاء الأكواد</button>
+                <!-- تبويب إدارة المنتجات -->
+                <div id="products-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="product-name">اسم المنتج:</label>
+                        <input type="text" id="product-name" class="form-control" placeholder="أدخل اسم المنتج">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-price">سعر المنتج:</label>
+                        <input type="number" id="product-price" class="form-control" placeholder="أدخل السعر">
+                    </div>
+                    
+                    <button class="admin-btn" onclick="addProduct()">إضافة منتج</button>
+                    
+                    <h3 style="margin: 20px 0 10px;">المنتجات المضافة</h3>
+                    <div class="products-list" id="admin-products-list">
+                        <!-- سيتم ملؤها بالمنتجات -->
                     </div>
                 </div>
                 
-                <div class="card">
-                    <h3>قائمة الأكواد</h3>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الكود</th>
-                                    <th>المستخدم</th>
-                                    <th>الحالة</th>
-                                    <th>تاريخ الإنشاء</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="codes-list">
-                                <!-- سيتم ملؤها بالبيانات -->
-                            </tbody>
-                        </table>
+                <!-- تبويب إدارة المستخدمين -->
+                <div id="users-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="user-id">ايدي المستخدم:</label>
+                        <input type="text" id="user-id" class="form-control" placeholder="أدخل ايدي المستخدم">
                     </div>
-                </div>
-            </div>
-            
-            <!-- تبويب التقارير -->
-            <div id="reports-tab" class="tab-content">
-                <div class="card">
-                    <h3>إحصائيات النظام</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                        <div style="text-align: center; padding: 15px; background: #e8f4fd; border-radius: 10px;">
-                            <h3 id="total-users">0</h3>
-                            <p>إجمالي المستخدمين</p>
-                        </div>
-                        <div style="text-align: center; padding: 15px; background: #e8f5e9; border-radius: 10px;">
-                            <h3 id="active-users">0</h3>
-                            <p>المستخدمين النشطين</p>
-                        </div>
-                        <div style="text-align: center; padding: 15px; background: #fff3e0; border-radius: 10px;">
-                            <h3 id="total-codes">0</h3>
-                            <p>إجمالي الأكواد</p>
-                        </div>
-                        <div style="text-align: center; padding: 15px; background: #ffebee; border-radius: 10px;">
-                            <h3 id="used-codes">0</h3>
-                            <p>الأكواد المستخدمة</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>آخر الأنشطة</h3>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>المستخدم</th>
-                                    <th>النشاط</th>
-                                    <th>التاريخ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="system-activities">
-                                <!-- سيتم ملؤها بالبيانات -->
-                            </tbody>
-                        </table>
+                    
+                    <button class="admin-btn" onclick="resetUserMoney()">تصفير أموال المستخدم</button>
+                    <button class="admin-btn" onclick="resetUserProducts()">تصفير منتجات المستخدم</button>
+                    
+                    <h3 style="margin: 20px 0 10px;">إجراءات عامة</h3>
+                    <button class="admin-btn danger" onclick="resetAllMoney()">تصفير أموال الجميع</button>
+                    <button class="admin-btn danger" onclick="resetAllProducts()">تصفير منتجات الجميع</button>
+                    
+                    <h3 style="margin: 20px 0 10px;">قائمة المستخدمين</h3>
+                    <div class="users-list" id="users-list">
+                        <!-- سيتم ملؤها بالمستخدمين -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- نافذة إدخال كود الأدمن -->
+    <div class="admin-code-modal" id="admin-code-modal">
+        <div class="admin-code-form">
+            <span class="close-btn" onclick="closeAdminCodeModal()">&times;</span>
+            <h2>إدخال كود الأدمن</h2>
+            
+            <div class="form-group">
+                <label for="admin-code-input">كود الأدمن:</label>
+                <input type="text" id="admin-code-input" class="form-control" placeholder="أدخل كود الأدمن">
+            </div>
+            
+            <button class="admin-btn" style="width: 100%;" onclick="verifyAdminCode()">تأكيد</button>
+            
+            <div id="admin-code-message" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <p>جميع الحقوق محفوظة &copy; 2023 متجرنا الإلكتروني</p>
+        </div>
+    </footer>
+
     <script>
-        // بيانات وهمية للتجربة
-        let users = [
-            { id: 1, name: "أحمد محمد", email: "ahmed@example.com", code: "CODE123", status: "active", joinDate: "2023-10-01" },
-            { id: 2, name: "فاطمة علي", email: "fatima@example.com", code: "CODE456", status: "active", joinDate: "2023-10-05" },
-            { id: 3, name: "خالد إبراهيم", email: "khaled@example.com", code: "", status: "inactive", joinDate: "2023-10-10" }
-        ];
-        
-        let codes = [
-            { code: "CODE123", user: "أحمد محمد", status: "مستخدم", created: "2023-10-01" },
-            { code: "CODE456", user: "فاطمة علي", status: "مستخدم", created: "2023-10-05" },
-            { code: "CODE789", user: "", status: "غير مستخدم", created: "2023-10-15" },
-            { code: "CODE101", user: "", status: "غير مستخدم", created: "2023-10-15" }
-        ];
-        
-        let activities = [
-            { user: "أحمد محمد", action: "تسجيل الدخول", date: "2023-10-20 10:30" },
-            { user: "فاطمة علي", action: "استخدام الكود", date: "2023-10-19 15:45" },
-            { user: "المدير", action: "إنشاء أكواد جديدة", date: "2023-10-18 09:20" }
-        ];
+        // بيانات التطبيق
+        let currentUser = null;
+        let isAdmin = false;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let chargeCodes = JSON.parse(localStorage.getItem('chargeCodes')) || [];
         
         // تهيئة تسجيل الدخول بـ Google
         window.onload = function() {
@@ -434,10 +688,11 @@
                 }
             );
             
-            // تحميل البيانات الوهمية
-            loadUsersData();
-            loadCodesData();
-            loadReportsData();
+            checkLoginStatus();
+            loadOffers();
+            loadProducts();
+            loadPossessions();
+            loadAdminData();
         };
         
         // معالجة استجابة تسجيل الدخول
@@ -451,122 +706,305 @@
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
             
-            const user = JSON.parse(jsonPayload);
+            const userData = JSON.parse(jsonPayload);
             
-            // تخزين بيانات المستخدم
-            localStorage.setItem('currentUser', JSON.stringify(user));
+            // البحث عن المستخدم أو إنشاء حساب جديد
+            let user = users.find(u => u.email === userData.email);
             
-            // التحقق إذا كان المستخدم مديراً
-            const isAdmin = user.email === "admin@example.com"; // يمكن تغيير هذا الشرط
-            
-            // عرض اللوحة المناسبة
-            document.getElementById('login-panel').style.display = 'none';
-            
-            if (isAdmin) {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('admin-name').textContent = user.name;
-                document.getElementById('admin-email').textContent = user.email;
-                document.getElementById('admin-avatar').src = user.picture;
-            } else {
-                document.getElementById('user-panel').style.display = 'block';
-                document.getElementById('user-name').textContent = user.name;
-                document.getElementById('user-email').textContent = user.email;
-                document.getElementById('user-avatar').src = user.picture;
+            if (!user) {
+                // إنشاء مستخدم جديد
+                user = {
+                    id: generateId(),
+                    name: userData.name,
+                    email: userData.email,
+                    picture: userData.picture,
+                    balance: 0,
+                    possessions: [],
+                    isAdmin: false
+                };
                 
-                // البحث عن المستخدم في القائمة وعرض كوده إذا وجد
-                const foundUser = users.find(u => u.email === user.email);
-                if (foundUser && foundUser.code) {
-                    document.getElementById('user-personal-code').textContent = foundUser.code;
-                }
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
             }
+            
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            updateUI();
+            showMessage('تم تسجيل الدخول بنجاح', 'success');
         }
         
         // تسجيل الخروج
         function signOut() {
+            currentUser = null;
+            isAdmin = false;
             localStorage.removeItem('currentUser');
-            document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('user-panel').style.display = 'none';
-            document.getElementById('login-panel').style.display = 'block';
+            localStorage.removeItem('isAdmin');
             
             // تسجيل الخروج من Google
             google.accounts.id.disableAutoSelect();
+            
+            updateUI();
+            showMessage('تم تسجيل الخروج بنجاح', 'success');
         }
         
-        // تحميل بيانات المستخدمين
-        function loadUsersData() {
-            const usersList = document.getElementById('users-list');
-            usersList.innerHTML = '';
+        // التحقق من حالة تسجيل الدخول
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isAdmin = localStorage.getItem('isAdmin') === 'true';
+                updateUI();
+            }
+        }
+        
+        // تحديث واجهة المستخدم
+        function updateUI() {
+            const g_id_signin = document.getElementById('g_id_signin');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const userAvatar = document.getElementById('user-avatar');
+            const userBalance = document.getElementById('user-balance');
+            const adminPanel = document.getElementById('admin-panel');
             
-            users.forEach(user => {
-                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
-                const statusText = user.status === 'active' ? 'نشط' : 'غير نشط';
+            if (currentUser) {
+                g_id_signin.style.display = 'none';
+                userProfile.style.display = 'flex';
+                userName.textContent = currentUser.name;
+                userAvatar.src = currentUser.picture;
+                userBalance.textContent = currentUser.balance + ' ⬤';
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.code || 'لا يوجد'}</td>
-                    <td><span class="${statusClass}">${statusText}</span></td>
-                    <td>${user.joinDate}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="toggleUserStatus(${user.id})">${user.status === 'active' ? 'حظر' : 'تفعيل'}</button>
-                        <button class="btn btn-danger" onclick="deleteUser(${user.id})">حذف</button>
-                    </td>
+                if (isAdmin) {
+                    adminPanel.style.display = 'block';
+                } else {
+                    adminPanel.style.display = 'none';
+                }
+            } else {
+                g_id_signin.style.display = 'block';
+                userProfile.style.display = 'none';
+                adminPanel.style.display = 'none';
+            }
+            
+            loadPossessions();
+        }
+        
+        // عرض رسالة
+        function showMessage(message, type) {
+            // إنشاء عنصر رسالة مؤقت
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            messageDiv.textContent = message;
+            
+            // إضافة الرسالة إلى بداية body
+            document.body.prepend(messageDiv);
+            
+            // إزالة الرسالة بعد 3 ثواني
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // توليد معرف فريد
+        function generateId() {
+            return Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+        
+        // تحميل العروض
+        function loadOffers() {
+            const offersGrid = document.getElementById('offers-grid');
+            const sampleOffers = [
+                { id: 1, title: 'عرض خاص', price: 50, icon: 'fas fa-gift' },
+                { id: 2, title: 'خصم 20%', price: 30, icon: 'fas fa-percentage' },
+                { id: 3, title: 'عرض موسمي', price: 70, icon: 'fas fa-sun' },
+                { id: 4, title: 'عرض نهاية الأسبوع', price: 40, icon: 'fas fa-calendar-week' }
+            ];
+            
+            offersGrid.innerHTML = '';
+            
+            sampleOffers.forEach(offer => {
+                const offerCard = document.createElement('div');
+                offerCard.className = 'offer-card';
+                offerCard.innerHTML = `
+                    <div class="offer-image">
+                        <i class="${offer.icon}"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3 class="offer-title">${offer.title}</h3>
+                        <div class="offer-price">${offer.price} ⬤</div>
+                        <button class="buy-btn" onclick="buyOffer(${offer.id})">شراء الآن</button>
+                    </div>
                 `;
-                usersList.appendChild(row);
+                offersGrid.appendChild(offerCard);
             });
         }
         
-        // تحميل بيانات الأكواد
-        function loadCodesData() {
-            const codesList = document.getElementById('codes-list');
-            codesList.innerHTML = '';
+        // تحميل المنتجات
+        function loadProducts() {
+            const productsGrid = document.getElementById('products-grid');
             
-            codes.forEach(code => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${code.code}</td>
-                    <td>${code.user || 'لا يوجد'}</td>
-                    <td>${code.status}</td>
-                    <td>${code.created}</td>
-                    <td>
-                        <button class="btn btn-danger" onclick="deleteCode('${code.code}')">حذف</button>
-                    </td>
+            productsGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                // إضافة منتجات افتراضية إذا لم توجد
+                products = [
+                    { id: 1, name: 'منتج رقم 1', price: 100, icon: 'fas fa-box' },
+                    { id: 2, name: 'منتج رقم 2', price: 150, icon: 'fas fa-cube' },
+                    { id: 3, name: 'منتج رقم 3', price: 200, icon: 'fas fa-archive' }
+                ];
+                localStorage.setItem('products', JSON.stringify(products));
+            }
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        <i class="${product.icon}"></i>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">${product.price} ⬤</div>
+                        <button class="buy-btn" onclick="buyProduct(${product.id})">شراء الآن</button>
+                    </div>
                 `;
-                codesList.appendChild(row);
+                productsGrid.appendChild(productCard);
             });
         }
         
-        // تحميل بيانات التقارير
-        function loadReportsData() {
-            document.getElementById('total-users').textContent = users.length;
-            document.getElementById('active-users').textContent = users.filter(u => u.status === 'active').length;
-            document.getElementById('total-codes').textContent = codes.length;
-            document.getElementById('used-codes').textContent = codes.filter(c => c.status === 'مستخدم').length;
+        // تحميل الممتلكات
+        function loadPossessions() {
+            const possessionsGrid = document.getElementById('possessions-grid');
+            possessionsGrid.innerHTML = '';
             
-            const systemActivities = document.getElementById('system-activities');
-            systemActivities.innerHTML = '';
+            if (!currentUser || currentUser.possessions.length === 0) {
+                possessionsGrid.innerHTML = '<p>لا تمتلك أي منتجات حالياً</p>';
+                return;
+            }
             
-            activities.forEach(activity => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${activity.user}</td>
-                    <td>${activity.action}</td>
-                    <td>${activity.date}</td>
-                `;
-                systemActivities.appendChild(row);
+            currentUser.possessions.forEach(possessionId => {
+                const product = products.find(p => p.id === possessionId);
+                if (product) {
+                    const possessionCard = document.createElement('div');
+                    possessionCard.className = 'possession-card';
+                    possessionCard.innerHTML = `
+                        <div class="possession-image">
+                            <i class="${product.icon}"></i>
+                        </div>
+                        <div class="possession-content">
+                            <h3 class="possession-title">${product.name}</h3>
+                            <p>تم الشراء بتاريخ: ${new Date().toLocaleDateString('ar-SA')}</p>
+                        </div>
+                    `;
+                    possessionsGrid.appendChild(possessionCard);
+                }
             });
         }
         
-        // تبديل التبويبات
-        function switchTab(tabId) {
+        // شراء عرض
+        function buyOffer(offerId) {
+            if (!currentUser) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            // في تطبيق حقيقي، سيكون هناك سعر محدد لكل عرض
+            const offerPrice = 50;
+            
+            if (currentUser.balance < offerPrice) {
+                showMessage('رصيدك غير كافي لشراء هذا العرض', 'error');
+                return;
+            }
+            
+            currentUser.balance -= offerPrice;
+            updateUserData();
+            updateUI();
+            showMessage('تم شراء العرض بنجاح', 'success');
+        }
+        
+        // شراء منتج
+        function buyProduct(productId) {
+            if (!currentUser) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) {
+                showMessage('المنتج غير موجود', 'error');
+                return;
+            }
+            
+            if (currentUser.balance < product.price) {
+                showMessage('رصيدك غير كافي لشراء هذا المنتج', 'error');
+                return;
+            }
+            
+            // التحقق إذا كان المستخدم يمتلك المنتج بالفعل
+            if (currentUser.possessions.includes(productId)) {
+                showMessage('أنت تمتلك هذا المنتج بالفعل', 'error');
+                return;
+            }
+            
+            currentUser.balance -= product.price;
+            currentUser.possessions.push(productId);
+            
+            updateUserData();
+            updateUI();
+            showMessage('تم شراء المنتج بنجاح', 'success');
+        }
+        
+        // تحديث بيانات المستخدم
+        function updateUserData() {
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+        
+        // فتح نافذة إدخال كود الأدمن
+        document.getElementById('admin-login-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('admin-code-modal').classList.add('active');
+            document.getElementById('user-menu').classList.remove('active');
+        });
+        
+        // إغلاق نافذة إدخال كود الأدمن
+        function closeAdminCodeModal() {
+            document.getElementById('admin-code-modal').classList.remove('active');
+            document.getElementById('admin-code-message').innerHTML = '';
+        }
+        
+        // التحقق من كود الأدمن
+        function verifyAdminCode() {
+            const adminCode = document.getElementById('admin-code-input').value;
+            
+            if (adminCode === '5GHJKO3') {
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                currentUser.isAdmin = true;
+                updateUserData();
+                
+                closeAdminCodeModal();
+                updateUI();
+                showMessage('تم التحقق من هوية الأدمن بنجاح', 'success');
+            } else {
+                document.getElementById('admin-code-message').innerHTML = 
+                    '<div class="alert alert-danger">كود الأدمن غير صحيح</div>';
+            }
+        }
+        
+        // تبديل تبويبات الإدارة
+        function switchAdminTab(tabId) {
             // إخفاء جميع المحتويات
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
             // إزالة النشط من جميع الألسنة
-            document.querySelectorAll('.tab').forEach(tab => {
+            document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
@@ -575,171 +1013,266 @@
             
             // تعيين النشط للسان المحدد
             event.target.classList.add('active');
+            
+            // تحميل البيانات الخاصة بالتبويب
+            if (tabId === 'codes-tab') {
+                loadChargeCodes();
+            } else if (tabId === 'products-tab') {
+                loadAdminProducts();
+            } else if (tabId === 'users-tab') {
+                loadUsersList();
+            }
         }
         
-        // إضافة مستخدم جديد
-        function addUser() {
-            const email = document.getElementById('new-user-email').value;
-            if (!email) {
-                alert('يرجى إدخال بريد إلكتروني');
+        // تحميل بيانات الإدارة
+        function loadAdminData() {
+            loadChargeCodes();
+            loadAdminProducts();
+            loadUsersList();
+        }
+        
+        // تحميل أكواد الشحن
+        function loadChargeCodes() {
+            const codesList = document.getElementById('codes-list');
+            codesList.innerHTML = '';
+            
+            chargeCodes.forEach(code => {
+                const codeItem = document.createElement('div');
+                codeItem.className = 'code-item';
+                codeItem.innerHTML = `
+                    <div>${code.code} - ${code.value} ⬤</div>
+                    <div>${code.used ? 'مستخدم' : 'غير مستخدم'}</div>
+                `;
+                codesList.appendChild(codeItem);
+            });
+        }
+        
+        // تحميل المنتجات في لوحة الإدارة
+        function loadAdminProducts() {
+            const adminProductsList = document.getElementById('admin-products-list');
+            adminProductsList.innerHTML = '';
+            
+            products.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+                productItem.innerHTML = `
+                    <div>${product.name} - ${product.price} ⬤</div>
+                    <button class="admin-btn danger" onclick="deleteProduct(${product.id})">حذف</button>
+                `;
+                adminProductsList.appendChild(productItem);
+            });
+        }
+        
+        // تحميل قائمة المستخدمين
+        function loadUsersList() {
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = '';
+            
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `
+                    <div>${user.name} (${user.email}) - ID: ${user.id}</div>
+                    <div>${user.balance} ⬤</div>
+                `;
+                usersList.appendChild(userItem);
+            });
+        }
+        
+        // إنشاء كود شحن
+        function generateChargeCode() {
+            const code = document.getElementById('charge-code').value;
+            const value = parseInt(document.getElementById('charge-value').value);
+            
+            if (!code || !value) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
                 return;
             }
             
-            // إضافة المستخدم الجديد
-            const newUser = {
-                id: users.length + 1,
-                name: email.split('@')[0],
-                email: email,
-                code: '',
-                status: 'active',
-                joinDate: new Date().toISOString().split('T')[0]
+            // التحقق إذا كان الكود موجوداً بالفعل
+            if (chargeCodes.find(c => c.code === code)) {
+                showMessage('هذا الكود موجود بالفعل', 'error');
+                return;
+            }
+            
+            const chargeCode = {
+                code: code,
+                value: value,
+                used: false
             };
             
-            users.push(newUser);
-            loadUsersData();
-            document.getElementById('new-user-email').value = '';
+            chargeCodes.push(chargeCode);
+            localStorage.setItem('chargeCodes', JSON.stringify(chargeCodes));
             
-            // إضافة نشاط جديد
-            activities.unshift({
-                user: "المدير",
-                action: `إضافة مستخدم جديد: ${email}`,
-                date: new Date().toLocaleString('ar-SA')
-            });
+            document.getElementById('charge-code').value = '';
+            document.getElementById('charge-value').value = '';
             
-            alert('تم إضافة المستخدم بنجاح');
+            loadChargeCodes();
+            showMessage('تم إنشاء كود الشحن بنجاح', 'success');
         }
         
-        // تبديل حالة المستخدم
-        function toggleUserStatus(userId) {
+        // إضافة منتج
+        function addProduct() {
+            const name = document.getElementById('product-name').value;
+            const price = parseInt(document.getElementById('product-price').value);
+            
+            if (!name || !price) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+            
+            const product = {
+                id: generateId(),
+                name: name,
+                price: price,
+                icon: 'fas fa-box'
+            };
+            
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+            
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+            
+            loadProducts();
+            loadAdminProducts();
+            showMessage('تم إضافة المنتج بنجاح', 'success');
+        }
+        
+        // حذف منتج
+        function deleteProduct(productId) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                products = products.filter(p => p.id !== productId);
+                localStorage.setItem('products', JSON.stringify(products));
+                
+                // إزالة المنتج من ممتلكات جميع المستخدمين
+                users.forEach(user => {
+                    user.possessions = user.possessions.filter(p => p !== productId);
+                });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // تحديث بيانات المستخدم الحالي إذا كان يمتلك المنتج
+                if (currentUser && currentUser.possessions.includes(productId)) {
+                    currentUser.possessions = currentUser.possessions.filter(p => p !== productId);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                loadProducts();
+                loadAdminProducts();
+                loadPossessions();
+                showMessage('تم حذف المنتج بنجاح', 'success');
+            }
+        }
+        
+        // تصفير أموال مستخدم
+        function resetUserMoney() {
+            const userId = document.getElementById('user-id').value;
+            
+            if (!userId) {
+                showMessage('يرجى إدخال ايدي المستخدم', 'error');
+                return;
+            }
+            
             const user = users.find(u => u.id === userId);
-            if (user) {
-                user.status = user.status === 'active' ? 'inactive' : 'active';
-                loadUsersData();
-                
-                // إضافة نشاط جديد
-                activities.unshift({
-                    user: "المدير",
-                    action: `تغيير حالة ${user.name} إلى ${user.status === 'active' ? 'نشط' : 'غير نشط'}`,
-                    date: new Date().toLocaleString('ar-SA')
-                });
-            }
-        }
-        
-        // حذف مستخدم
-        function deleteUser(userId) {
-            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
-                users = users.filter(u => u.id !== userId);
-                loadUsersData();
-                
-                // إضافة نشاط جديد
-                activities.unshift({
-                    user: "المدير",
-                    action: `حذف مستخدم (ID: ${userId})`,
-                    date: new Date().toLocaleString('ar-SA')
-                });
-            }
-        }
-        
-        // إنشاء أكواد جديدة
-        function generateCodes() {
-            const count = parseInt(document.getElementById('codes-count').value) || 5;
             
-            for (let i = 0; i < count; i++) {
-                const newCode = 'CODE' + Math.random().toString(36).substring(2, 8).toUpperCase();
-                codes.push({
-                    code: newCode,
-                    user: '',
-                    status: 'غير مستخدم',
-                    created: new Date().toISOString().split('T')[0]
-                });
-            }
-            
-            loadCodesData();
-            
-            // إضافة نشاط جديد
-            activities.unshift({
-                user: "المدير",
-                action: `إنشاء ${count} كود جديد`,
-                date: new Date().toLocaleString('ar-SA')
-            });
-            
-            alert(`تم إنشاء ${count} كود جديد بنجاح`);
-        }
-        
-        // حذف كود
-        function deleteCode(code) {
-            if (confirm('هل أنت متأكد من حذف هذا الكود؟')) {
-                codes = codes.filter(c => c.code !== code);
-                loadCodesData();
-                
-                // إضافة نشاط جديد
-                activities.unshift({
-                    user: "المدير",
-                    action: `حذف الكود: ${code}`,
-                    date: new Date().toLocaleString('ar-SA')
-                });
-            }
-        }
-        
-        // إدخال الكود من قبل المستخدم
-        function submitCode() {
-            const codeInput = document.getElementById('code-input').value;
-            const codeMessage = document.getElementById('code-message');
-            
-            if (!codeInput) {
-                codeMessage.innerHTML = '<div class="alert alert-danger">يرجى إدخال كود</div>';
+            if (!user) {
+                showMessage('المستخدم غير موجود', 'error');
                 return;
             }
             
-            // البحث عن الكود
-            const code = codes.find(c => c.code === codeInput);
+            user.balance = 0;
+            localStorage.setItem('users', JSON.stringify(users));
             
-            if (!code) {
-                codeMessage.innerHTML = '<div class="alert alert-danger">الكود غير صحيح</div>';
-                return;
+            // إذا كان المستخدم الحالي هو المستخدم المطلوب
+            if (currentUser && currentUser.id === userId) {
+                currentUser.balance = 0;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUI();
             }
             
-            if (code.status === 'مستخدم') {
-                codeMessage.innerHTML = '<div class="alert alert-danger">هذا الكود مستخدم مسبقاً</div>';
-                return;
-            }
-            
-            // الحصول على بيانات المستخدم الحالي
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
-            // تعيين الكود للمستخدم
-            code.user = currentUser.name;
-            code.status = 'مستخدم';
-            
-            // تحديث كود المستخدم في القائمة
-            const user = users.find(u => u.email === currentUser.email);
-            if (user) {
-                user.code = codeInput;
-                document.getElementById('user-personal-code').textContent = codeInput;
-            }
-            
-            // تحديث واجهة المستخدم
-            loadCodesData();
-            codeMessage.innerHTML = '<div class="alert alert-success">تم تفعيل الكود بنجاح</div>';
-            document.getElementById('code-input').value = '';
-            
-            // إضافة نشاط جديد
-            activities.unshift({
-                user: currentUser.name,
-                action: `استخدام الكود: ${codeInput}`,
-                date: new Date().toLocaleString('ar-SA')
-            });
-            
-            // تحديث أنشطة المستخدم
-            const userActivities = document.getElementById('user-activities');
-            userActivities.innerHTML = `
-                <tr>
-                    <td>${new Date().toLocaleString('ar-SA')}</td>
-                    <td>استخدام الكود: ${codeInput}</td>
-                    <td><span class="status-active">ناجح</span></td>
-                </tr>
-            `;
+            document.getElementById('user-id').value = '';
+            showMessage('تم تصفير أموال المستخدم بنجاح', 'success');
         }
+        
+        // تصفير منتجات مستخدم
+        function resetUserProducts() {
+            const userId = document.getElementById('user-id').value;
+            
+            if (!userId) {
+                showMessage('يرجى إدخال ايدي المستخدم', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) {
+                showMessage('المستخدم غير موجود', 'error');
+                return;
+            }
+            
+            user.possessions = [];
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // إذا كان المستخدم الحالي هو المستخدم المطلوب
+            if (currentUser && currentUser.id === userId) {
+                currentUser.possessions = [];
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                loadPossessions();
+            }
+            
+            document.getElementById('user-id').value = '';
+            showMessage('تم تصفير منتجات المستخدم بنجاح', 'success');
+        }
+        
+        // تصفير أموال الجميع
+        function resetAllMoney() {
+            if (confirm('هل أنت متأكد من تصفير أموال جميع المستخدمين؟')) {
+                users.forEach(user => {
+                    user.balance = 0;
+                });
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                if (currentUser) {
+                    currentUser.balance = 0;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUI();
+                }
+                
+                showMessage('تم تصفير أموال جميع المستخدمين بنجاح', 'success');
+            }
+        }
+        
+        // تصفير منتجات الجميع
+        function resetAllProducts() {
+            if (confirm('هل أنت متأكد من تصفير منتجات جميع المستخدمين؟')) {
+                users.forEach(user => {
+                    user.possessions = [];
+                });
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                if (currentUser) {
+                    currentUser.possessions = [];
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    loadPossessions();
+                }
+                
+                showMessage('تم تصفير منتجات جميع المستخدمين بنجاح', 'success');
+            }
+        }
+        
+        // إظهار/إخفاء قائمة المستخدم
+        document.getElementById('user-profile').addEventListener('click', function() {
+            document.getElementById('user-menu').classList.toggle('active');
+        });
+        
+        // إغلاق قائمة المستخدم عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-profile')) {
+                document.getElementById('user-menu').classList.remove('active');
+            }
+        });
     </script>
 </body>
-  </html>
+    </html>
