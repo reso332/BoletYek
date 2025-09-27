@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -94,6 +94,12 @@
             padding: 8px 15px;
             border-radius: 20px;
             font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .balance:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .user-profile {
@@ -234,51 +240,6 @@
             background: #1B4F72;
         }
         
-        /* قسم المنتجات */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .product-image {
-            height: 160px;
-            background: linear-gradient(45deg, var(--secondary), var(--success));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-        }
-        
-        .product-content {
-            padding: 15px;
-        }
-        
-        .product-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .product-price {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-        
         /* قسم الممتلكات */
         .possessions-grid {
             display: grid;
@@ -407,6 +368,48 @@
             border-bottom: none;
         }
         
+        /* نافذة إدخال كود الشحن */
+        .charge-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .charge-modal.active {
+            display: flex;
+        }
+        
+        .charge-form {
+            background: white;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .charge-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
         /* نافذة إدخال كود الأدمن */
         .admin-code-modal {
             display: none;
@@ -438,15 +441,6 @@
             text-align: center;
             margin-bottom: 20px;
             color: var(--primary);
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
         }
         
         /* الفوتر */
@@ -498,7 +492,7 @@
                 order: 1;
             }
             
-            .offers-grid, .products-grid, .possessions-grid {
+            .offers-grid, .possessions-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
             }
         }
@@ -516,12 +510,11 @@
                 
                 <div class="nav-links">
                     <a href="#offers">العروض</a>
-                    <a href="#products">المنتجات</a>
                     <a href="#possessions">ممتلكاتي</a>
                 </div>
                 
                 <div class="user-section">
-                    <div class="balance" id="user-balance">0 <i class="fas fa-coins"></i></div>
+                    <div class="balance" id="user-balance" onclick="openChargeModal()">0 <i class="fas fa-coins"></i></div>
                     
                     <div class="user-profile" id="user-profile" style="display: none;">
                         <img id="user-avatar" class="user-avatar" alt="صورة المستخدم">
@@ -543,17 +536,9 @@
         <div class="main-content">
             <!-- قسم العروض -->
             <section id="offers">
-                <h2 class="section-title">العروض الحصرية</h2>
+                <h2 class="section-title">العروض</h2>
                 <div class="offers-grid" id="offers-grid">
                     <!-- سيتم ملؤها بالعروض -->
-                </div>
-            </section>
-            
-            <!-- قسم المنتجات -->
-            <section id="products">
-                <h2 class="section-title">المنتجات المتاحة</h2>
-                <div class="products-grid" id="products-grid">
-                    <!-- سيتم ملؤها بالمنتجات -->
                 </div>
             </section>
             
@@ -571,7 +556,7 @@
                 
                 <div class="admin-tabs">
                     <div class="admin-tab active" onclick="switchAdminTab('codes-tab')">أكواد الشحن</div>
-                    <div class="admin-tab" onclick="switchAdminTab('products-tab')">إدارة المنتجات</div>
+                    <div class="admin-tab" onclick="switchAdminTab('products-tab')">إدارة العروض</div>
                     <div class="admin-tab" onclick="switchAdminTab('users-tab')">إدارة المستخدمين</div>
                 </div>
                 
@@ -595,23 +580,23 @@
                     </div>
                 </div>
                 
-                <!-- تبويب إدارة المنتجات -->
+                <!-- تبويب إدارة العروض -->
                 <div id="products-tab" class="tab-content">
                     <div class="form-group">
-                        <label for="product-name">اسم المنتج:</label>
-                        <input type="text" id="product-name" class="form-control" placeholder="أدخل اسم المنتج">
+                        <label for="product-name">اسم العرض:</label>
+                        <input type="text" id="product-name" class="form-control" placeholder="أدخل اسم العرض">
                     </div>
                     
                     <div class="form-group">
-                        <label for="product-price">سعر المنتج:</label>
+                        <label for="product-price">سعر العرض:</label>
                         <input type="number" id="product-price" class="form-control" placeholder="أدخل السعر">
                     </div>
                     
-                    <button class="admin-btn" onclick="addProduct()">إضافة منتج</button>
+                    <button class="admin-btn" onclick="addProduct()">إضافة عرض</button>
                     
-                    <h3 style="margin: 20px 0 10px;">المنتجات المضافة</h3>
+                    <h3 style="margin: 20px 0 10px;">العروض المضافة</h3>
                     <div class="products-list" id="admin-products-list">
-                        <!-- سيتم ملؤها بالمنتجات -->
+                        <!-- سيتم ملؤها بالعروض -->
                     </div>
                 </div>
                 
@@ -623,11 +608,11 @@
                     </div>
                     
                     <button class="admin-btn" onclick="resetUserMoney()">تصفير أموال المستخدم</button>
-                    <button class="admin-btn" onclick="resetUserProducts()">تصفير منتجات المستخدم</button>
+                    <button class="admin-btn" onclick="resetUserProducts()">تصفير عروض المستخدم</button>
                     
                     <h3 style="margin: 20px 0 10px;">إجراءات عامة</h3>
                     <button class="admin-btn danger" onclick="resetAllMoney()">تصفير أموال الجميع</button>
-                    <button class="admin-btn danger" onclick="resetAllProducts()">تصفير منتجات الجميع</button>
+                    <button class="admin-btn danger" onclick="resetAllProducts()">تصفير عروض الجميع</button>
                     
                     <h3 style="margin: 20px 0 10px;">قائمة المستخدمين</h3>
                     <div class="users-list" id="users-list">
@@ -635,6 +620,23 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعبئة المحفظة -->
+    <div class="charge-modal" id="charge-modal">
+        <div class="charge-form">
+            <span class="close-btn" onclick="closeChargeModal()">&times;</span>
+            <h2>تعبئة المحفظة</h2>
+            
+            <div class="form-group">
+                <label for="charge-code-input">كود الشحن:</label>
+                <input type="text" id="charge-code-input" class="form-control" placeholder="أدخل كود الشحن">
+            </div>
+            
+            <button class="admin-btn" style="width: 100%;" onclick="useChargeCode()">تأكيد</button>
+            
+            <div id="charge-message" style="margin-top: 15px;"></div>
         </div>
     </div>
 
@@ -690,7 +692,6 @@
             
             checkLoginStatus();
             loadOffers();
-            loadProducts();
             loadPossessions();
             loadAdminData();
         };
@@ -812,62 +813,34 @@
         // تحميل العروض
         function loadOffers() {
             const offersGrid = document.getElementById('offers-grid');
-            const sampleOffers = [
-                { id: 1, title: 'عرض خاص', price: 50, icon: 'fas fa-gift' },
-                { id: 2, title: 'خصم 20%', price: 30, icon: 'fas fa-percentage' },
-                { id: 3, title: 'عرض موسمي', price: 70, icon: 'fas fa-sun' },
-                { id: 4, title: 'عرض نهاية الأسبوع', price: 40, icon: 'fas fa-calendar-week' }
-            ];
             
             offersGrid.innerHTML = '';
             
-            sampleOffers.forEach(offer => {
-                const offerCard = document.createElement('div');
-                offerCard.className = 'offer-card';
-                offerCard.innerHTML = `
-                    <div class="offer-image">
-                        <i class="${offer.icon}"></i>
-                    </div>
-                    <div class="offer-content">
-                        <h3 class="offer-title">${offer.title}</h3>
-                        <div class="offer-price">${offer.price} ⬤</div>
-                        <button class="buy-btn" onclick="buyOffer(${offer.id})">شراء الآن</button>
-                    </div>
-                `;
-                offersGrid.appendChild(offerCard);
-            });
-        }
-        
-        // تحميل المنتجات
-        function loadProducts() {
-            const productsGrid = document.getElementById('products-grid');
-            
-            productsGrid.innerHTML = '';
-            
             if (products.length === 0) {
-                // إضافة منتجات افتراضية إذا لم توجد
+                // إضافة عروض افتراضية إذا لم توجد
                 products = [
-                    { id: 1, name: 'منتج رقم 1', price: 100, icon: 'fas fa-box' },
-                    { id: 2, name: 'منتج رقم 2', price: 150, icon: 'fas fa-cube' },
-                    { id: 3, name: 'منتج رقم 3', price: 200, icon: 'fas fa-archive' }
+                    { id: 1, name: 'عرض خاص', price: 100, icon: 'fas fa-gift' },
+                    { id: 2, name: 'خصم 20%', price: 150, icon: 'fas fa-percentage' },
+                    { id: 3, name: 'عرض موسمي', price: 200, icon: 'fas fa-sun' },
+                    { id: 4, name: 'عرض نهاية الأسبوع', price: 80, icon: 'fas fa-calendar-week' }
                 ];
                 localStorage.setItem('products', JSON.stringify(products));
             }
             
             products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <div class="product-image">
+                const offerCard = document.createElement('div');
+                offerCard.className = 'offer-card';
+                offerCard.innerHTML = `
+                    <div class="offer-image">
                         <i class="${product.icon}"></i>
                     </div>
-                    <div class="product-content">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">${product.price} ⬤</div>
+                    <div class="offer-content">
+                        <h3 class="offer-title">${product.name}</h3>
+                        <div class="offer-price">${product.price} ⬤</div>
                         <button class="buy-btn" onclick="buyProduct(${product.id})">شراء الآن</button>
                     </div>
                 `;
-                productsGrid.appendChild(productCard);
+                offersGrid.appendChild(offerCard);
             });
         }
         
@@ -877,7 +850,7 @@
             possessionsGrid.innerHTML = '';
             
             if (!currentUser || currentUser.possessions.length === 0) {
-                possessionsGrid.innerHTML = '<p>لا تمتلك أي منتجات حالياً</p>';
+                possessionsGrid.innerHTML = '<p>لا تمتلك أي عروض حالياً</p>';
                 return;
             }
             
@@ -901,27 +874,6 @@
         }
         
         // شراء عرض
-        function buyOffer(offerId) {
-            if (!currentUser) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-            
-            // في تطبيق حقيقي، سيكون هناك سعر محدد لكل عرض
-            const offerPrice = 50;
-            
-            if (currentUser.balance < offerPrice) {
-                showMessage('رصيدك غير كافي لشراء هذا العرض', 'error');
-                return;
-            }
-            
-            currentUser.balance -= offerPrice;
-            updateUserData();
-            updateUI();
-            showMessage('تم شراء العرض بنجاح', 'success');
-        }
-        
-        // شراء منتج
         function buyProduct(productId) {
             if (!currentUser) {
                 showMessage('يجب تسجيل الدخول أولاً', 'error');
@@ -931,18 +883,18 @@
             const product = products.find(p => p.id === productId);
             
             if (!product) {
-                showMessage('المنتج غير موجود', 'error');
+                showMessage('العرض غير موجود', 'error');
                 return;
             }
             
             if (currentUser.balance < product.price) {
-                showMessage('رصيدك غير كافي لشراء هذا المنتج', 'error');
+                showMessage('رصيدك غير كافي لشراء هذا العرض', 'error');
                 return;
             }
             
-            // التحقق إذا كان المستخدم يمتلك المنتج بالفعل
+            // التحقق إذا كان المستخدم يمتلك العرض بالفعل
             if (currentUser.possessions.includes(productId)) {
-                showMessage('أنت تمتلك هذا المنتج بالفعل', 'error');
+                showMessage('أنت تمتلك هذا العرض بالفعل', 'error');
                 return;
             }
             
@@ -951,7 +903,7 @@
             
             updateUserData();
             updateUI();
-            showMessage('تم شراء المنتج بنجاح', 'success');
+            showMessage('تم شراء العرض بنجاح', 'success');
         }
         
         // تحديث بيانات المستخدم
@@ -962,6 +914,61 @@
                 localStorage.setItem('users', JSON.stringify(users));
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
             }
+        }
+        
+        // فتح نافذة تعبئة المحفظة
+        function openChargeModal() {
+            if (!currentUser) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            document.getElementById('charge-modal').classList.add('active');
+        }
+        
+        // إغلاق نافذة تعبئة المحفظة
+        function closeChargeModal() {
+            document.getElementById('charge-modal').classList.remove('active');
+            document.getElementById('charge-message').innerHTML = '';
+            document.getElementById('charge-code-input').value = '';
+        }
+        
+        // استخدام كود الشحن
+        function useChargeCode() {
+            const code = document.getElementById('charge-code-input').value;
+            
+            if (!code) {
+                document.getElementById('charge-message').innerHTML = 
+                    '<div class="alert alert-danger">يرجى إدخال كود الشحن</div>';
+                return;
+            }
+            
+            const chargeCode = chargeCodes.find(c => c.code === code);
+            
+            if (!chargeCode) {
+                document.getElementById('charge-message').innerHTML = 
+                    '<div class="alert alert-danger">كود الشحن غير صحيح</div>';
+                return;
+            }
+            
+            if (chargeCode.used) {
+                document.getElementById('charge-message').innerHTML = 
+                    '<div class="alert alert-danger">هذا الكود مستخدم مسبقاً</div>';
+                return;
+            }
+            
+            // إضافة القيمة إلى رصيد المستخدم
+            currentUser.balance += chargeCode.value;
+            
+            // تعليم الكود كمستخدم وحذفه من القائمة
+            chargeCode.used = true;
+            chargeCodes = chargeCodes.filter(c => c.code !== code); // حذف الكود المستخدم
+            
+            localStorage.setItem('chargeCodes', JSON.stringify(chargeCodes));
+            updateUserData();
+            updateUI();
+            
+            closeChargeModal();
+            showMessage(`تم تعبئة محفظتك بمبلغ ${chargeCode.value} ⬤ بنجاح`, 'success');
         }
         
         // فتح نافذة إدخال كود الأدمن
@@ -1047,7 +1054,7 @@
             });
         }
         
-        // تحميل المنتجات في لوحة الإدارة
+        // تحميل العروض في لوحة الإدارة
         function loadAdminProducts() {
             const adminProductsList = document.getElementById('admin-products-list');
             adminProductsList.innerHTML = '';
@@ -1111,7 +1118,7 @@
             showMessage('تم إنشاء كود الشحن بنجاح', 'success');
         }
         
-        // إضافة منتج
+        // إضافة عرض
         function addProduct() {
             const name = document.getElementById('product-name').value;
             const price = parseInt(document.getElementById('product-price').value);
@@ -1125,7 +1132,7 @@
                 id: generateId(),
                 name: name,
                 price: price,
-                icon: 'fas fa-box'
+                icon: 'fas fa-gift'
             };
             
             products.push(product);
@@ -1134,33 +1141,33 @@
             document.getElementById('product-name').value = '';
             document.getElementById('product-price').value = '';
             
-            loadProducts();
+            loadOffers();
             loadAdminProducts();
-            showMessage('تم إضافة المنتج بنجاح', 'success');
+            showMessage('تم إضافة العرض بنجاح', 'success');
         }
         
-        // حذف منتج
+        // حذف عرض
         function deleteProduct(productId) {
-            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+            if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
                 products = products.filter(p => p.id !== productId);
                 localStorage.setItem('products', JSON.stringify(products));
                 
-                // إزالة المنتج من ممتلكات جميع المستخدمين
+                // إزالة العرض من ممتلكات جميع المستخدمين
                 users.forEach(user => {
                     user.possessions = user.possessions.filter(p => p !== productId);
                 });
                 localStorage.setItem('users', JSON.stringify(users));
                 
-                // تحديث بيانات المستخدم الحالي إذا كان يمتلك المنتج
+                // تحديث بيانات المستخدم الحالي إذا كان يمتلك العرض
                 if (currentUser && currentUser.possessions.includes(productId)) {
                     currentUser.possessions = currentUser.possessions.filter(p => p !== productId);
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 }
                 
-                loadProducts();
+                loadOffers();
                 loadAdminProducts();
                 loadPossessions();
-                showMessage('تم حذف المنتج بنجاح', 'success');
+                showMessage('تم حذف العرض بنجاح', 'success');
             }
         }
         
@@ -1194,7 +1201,7 @@
             showMessage('تم تصفير أموال المستخدم بنجاح', 'success');
         }
         
-        // تصفير منتجات مستخدم
+        // تصفير عروض مستخدم
         function resetUserProducts() {
             const userId = document.getElementById('user-id').value;
             
@@ -1221,7 +1228,7 @@
             }
             
             document.getElementById('user-id').value = '';
-            showMessage('تم تصفير منتجات المستخدم بنجاح', 'success');
+            showMessage('تم تصفير عروض المستخدم بنجاح', 'success');
         }
         
         // تصفير أموال الجميع
@@ -1243,9 +1250,9 @@
             }
         }
         
-        // تصفير منتجات الجميع
+        // تصفير عروض الجميع
         function resetAllProducts() {
-            if (confirm('هل أنت متأكد من تصفير منتجات جميع المستخدمين؟')) {
+            if (confirm('هل أنت متأكد من تصفير عروض جميع المستخدمين؟')) {
                 users.forEach(user => {
                     user.possessions = [];
                 });
@@ -1258,7 +1265,7 @@
                     loadPossessions();
                 }
                 
-                showMessage('تم تصفير منتجات جميع المستخدمين بنجاح', 'success');
+                showMessage('تم تصفير عروض جميع المستخدمين بنجاح', 'success');
             }
         }
         
@@ -1275,4 +1282,4 @@
         });
     </script>
 </body>
-    </html>
+     </html>
