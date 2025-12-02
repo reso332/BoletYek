@@ -1,116 +1,67 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول مع Google</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: white; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 90%; max-width: 420px; padding: 35px; text-align: center; }
-        h1 { color: #2c3e50; margin-bottom: 10px; font-size: 28px; }
-        p { color: #7f8c8d; margin-bottom: 25px; line-height: 1.5; }
-        .logo { font-size: 50px; color: #4285f4; margin-bottom: 20px; }
-        .btn { display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px 20px; width: 100%; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s; margin: 10px 0; }
-        .btn:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .google-btn { color: #757575; border-color: #ddd; }
-        .google-btn:hover { background: #f8f9fa; }
-        .google-icon { width: 20px; height: 20px; margin-left: 10px; }
-        .divider { display: flex; align-items: center; margin: 25px 0; color: #95a5a6; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #ecf0f1; }
-        .divider span { padding: 0 15px; }
-        .form-group { margin-bottom: 20px; text-align: right; }
-        input { width: 100%; padding: 14px; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 16px; transition: border 0.3s; }
-        input:focus { border-color: #3498db; outline: none; }
-        .login-btn { background: linear-gradient(to right, #3498db, #2c3e50); color: white; border: none; padding: 15px; font-size: 17px; font-weight: 600; }
-        .links { margin-top: 25px; }
-        a { color: #3498db; text-decoration: none; font-weight: 500; }
-        a:hover { text-decoration: underline; }
-        .message { padding: 12px; border-radius: 6px; margin: 15px 0; display: none; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
+  <meta charset="UTF-8">
+  <title>تسجيل الدخول باستخدام Google</title>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    #user-info {
+      margin-top: 20px;
+      display: none;
+    }
+    img {
+      border-radius: 50%;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="logo">🔐</div>
-        <h1>تسجيل الدخول</h1>
-        <p>سجل الدخول باستخدام حساب Google أو باستخدام البريد الإلكتروني</p>
-        
-        <div id="message" class="message"></div>
-        
-        <button class="btn google-btn" id="googleSignIn">
-            <svg class="google-icon" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            تسجيل الدخول باستخدام Google
-        </button>
-        
-        <div class="divider"><span>أو</span></div>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="كلمة المرور" required>
-            </div>
-            <button type="submit" class="btn login-btn">تسجيل الدخول</button>
-        </form>
-        
-        <div class="links">
-            <a href="#" onclick="showMessage('هذه خدمة تجريبية فقط', 'error')">نسيت كلمة المرور؟</a> | 
-            <a href="#" onclick="showMessage('هذه خدمة تجريبية فقط', 'error')">إنشاء حساب جديد</a>
-        </div>
-    </div>
 
-    <script>
-        // رسائل التنبيه
-        function showMessage(text, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.textContent = text;
-            msgDiv.className = `message ${type}`;
-            msgDiv.style.display = 'block';
-            setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
-        }
+  <h2>تسجيل الدخول باستخدام Google</h2>
 
-        // تسجيل الدخول التقليدي
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if(email && password) {
-                showMessage(`مرحباً! تم تسجيل دخول ${email} (تجريبي)`, 'success');
-            } else {
-                showMessage('يرجى ملء جميع الحقول', 'error');
-            }
-        });
+  <!-- زر Google -->
+  <div id="g_id_onload"
+       data-client_id="1009347423340-movq119nqjkv18b3eus1p63ebs587daj.apps.googleusercontent.com"
+       data-context="signin"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
 
-        // زر تسجيل الدخول بـ Google
-        document.getElementById('googleSignIn').addEventListener('click', function() {
-            showMessage('جاري التوجيه إلى Google لتسجيل الدخول...', 'success');
-            
-            // في تطبيق حقيقي، ستكون هذه هي العملية:
-            // 1. توجيه المستخدم إلى Google OAuth
-            // 2. Google تعيد التوجيه إلى خادمك مع رمز المصادقة
-            // 3. خادمك يتبادل الرمز مع بيانات المستخدم
-            
-            // مثال على رابط OAuth حقيقي (لا يعمل بدون خادم):
-            // https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile
-            
-            setTimeout(() => {
-                showMessage('لتطبيق حقيقي، يجب إعداد خادم (backend) للتعامل مع OAuth', 'error');
-            }, 2000);
-        });
+  <div class="g_id_signin"
+       data-type="standard"
+       data-size="large"
+       data-theme="outline"
+       data-text="signin_with"
+       data-shape="rectangular"
+       data-logo_alignment="left">
+  </div>
 
-        // إظهار رسالة ترحيبية
-        window.onload = function() {
-            showMessage('هذا نموذج تجريبي. لتطبيق حقيقي، يلزم وجود خادم (backend)', 'success');
-        }
-    </script>
+  <div id="user-info">
+    <h3>تم تسجيل الدخول</h3>
+    <img id="user-pic" width="80">
+    <p id="user-name"></p>
+    <p id="user-email"></p>
+  </div>
+
+  <script>
+    function handleCredentialResponse(response) {
+      // فك تشفير الـ JWT للحصول على بيانات المستخدم
+      const data = JSON.parse(atob(response.credential.split('.')[1]));
+
+      document.getElementById("user-pic").src = data.picture;
+      document.getElementById("user-name").innerText = "الاسم: " + data.name;
+      document.getElementById("user-email").innerText = "الإيميل: " + data.email;
+
+      document.getElementById("user-info").style.display = "block";
+    }
+  </script>
+
 </body>
 </html>
