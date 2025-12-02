@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Discond</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
     --primary: #6d8ed1;
@@ -67,33 +68,84 @@
     font-weight: 500;
   }
   
-  .login-input {
+  .google-login-btn {
     width: 100%;
     padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 16px;
-  }
-  
-  .login-input:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
-  
-  .login-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 14px 30px;
+    background: white;
+    border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  
+  .google-login-btn:hover {
+    background: #f5f5f5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .google-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .loading {
+    display: none;
+    margin: 20px 0;
+  }
+  
+  .loading.active {
+    display: inline-block;
+  }
+  
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* زر الدخول اليدوي */
+  .manual-login {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .manual-login input {
     width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  .manual-login-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
     transition: background 0.3s;
   }
   
-  .login-btn:hover {
+  .manual-login-btn:hover {
     background: var(--primary-light);
   }
   
@@ -145,6 +197,22 @@
     font-size: 12px;
     display: inline-block;
     margin-right: 10px;
+  }
+  
+  .logout-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+    transition: background 0.3s;
+  }
+  
+  .logout-btn:hover {
+    background: #ff6b81;
   }
   
   /* أدوات الإدمن */
@@ -608,12 +676,40 @@
 <!-- شاشة تسجيل الدخول -->
 <div id="loginScreen" class="login-screen">
   <div class="login-box">
-    <h2>Welecome to Discond</h2>
-    <input type="text" id="userName" class="login-input" placeholder="اسم المستخدم" maxlength="20">
-    <input type="text" id="userAvatar" class="login-input" placeholder="رابط الصورة (اختياري)">
-    <p style="color: var(--text-light); font-size: 14px; margin-bottom: 20px;">يمكنك ترك رابط الصورة فارغاً</p>
+    <h2>مرحباً بك في Discond</h2>
     
-    <button id="loginBtn" class="login-btn">ابدأ الدردشة</button>
+    <!-- زر تسجيل الدخول بـ Google -->
+    <button id="googleLoginBtn" class="google-login-btn">
+      <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+      </svg>
+      تسجيل الدخول باستخدام Google
+    </button>
+    
+    <!-- مؤشر التحميل -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+    </div>
+    
+    <!-- زر Google للـ GSI -->
+    <div id="g_id_onload"
+         data-client_id="1009347423340-movq119nqjkv18b3eus1p63ebs587daj.apps.googleusercontent.com"
+         data-context="signin"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    
+    <!-- زر تسجيل الدخول يدوياً -->
+    <div class="manual-login">
+      <p style="color: var(--text-light); margin-bottom: 15px; font-size: 14px;">أو ادخل يدوياً:</p>
+      <input type="text" id="manualName" placeholder="اسم المستخدم" maxlength="20">
+      <input type="email" id="manualEmail" placeholder="البريد الإلكتروني (اختياري)">
+      <button id="manualLoginBtn" class="manual-login-btn">الدخول كضيف</button>
+    </div>
+    
   </div>
 </div>
 
@@ -668,10 +764,12 @@
           <span id="adminBadge" class="admin-badge" style="display: none;">إدمن</span>
           اسم المستخدم
         </div>
-        <div style="color: var(--text-light); font-size: 14px; margin-bottom: 10px;">مستخدم نشط</div>
+        <div style="color: var(--text-light); font-size: 14px; margin-bottom: 10px;" id="userEmail">مستخدم نشط</div>
         <div style="color: var(--primary); font-size: 12px; background: #e8f0fe; padding: 5px 10px; border-radius: 15px;">
           ID: <span id="userIdText">---</span>
         </div>
+        
+        <button id="logoutBtn" class="logout-btn">تسجيل الخروج</button>
       </div>
       
       <!-- أدوات الإدمن -->
@@ -747,13 +845,14 @@
   // العناصر في الصفحة
   const loginScreen = document.getElementById('loginScreen');
   const mainApp = document.getElementById('mainApp');
-  const loginBtn = document.getElementById('loginBtn');
-  const userNameInput = document.getElementById('userName');
-  const userAvatarInput = document.getElementById('userAvatar');
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const manualLoginBtn = document.getElementById('manualLoginBtn');
+  const loadingDiv = document.getElementById('loading');
   const profileName = document.getElementById('profileName');
   const profileAvatar = document.getElementById('profileAvatar');
   const adminBadge = document.getElementById('adminBadge');
   const userIdText = document.getElementById('userIdText');
+  const userEmail = document.getElementById('userEmail');
   const messagesContainer = document.getElementById('messagesContainer');
   const messageInput = document.getElementById('message-input');
   const sendBtn = document.getElementById('send-btn');
@@ -762,6 +861,7 @@
   const chatLocked = document.getElementById('chatLocked');
   const lockReason = document.getElementById('lockReason');
   const lockTime = document.getElementById('lockTime');
+  const logoutBtn = document.getElementById('logoutBtn');
   
   // أدوات الإدمن
   const adminTools = document.getElementById('adminTools');
@@ -779,21 +879,13 @@
   const commandUsersList = document.getElementById('commandUsersList');
   const commandCancelBtn = document.getElementById('commandCancelBtn');
 
-  // دالة لإنشاء ID قصير
-  function generateShortId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 8; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
-
   // بيانات المستخدم الحالي
   let currentUser = {
     name: '',
+    email: '',
     avatar: '',
     userId: '',
+    googleId: '',
     shortId: '',
     isAdmin: false
   };
@@ -817,27 +909,130 @@
     }, 3000);
   }
 
-  // تسجيل الدخول
-  loginBtn.addEventListener('click', async () => {
-    const name = userNameInput.value.trim();
-    const avatar = userAvatarInput.value.trim();
+  // عرض/إخفاء التحميل
+  function showLoading(show) {
+    if (show) {
+      loadingDiv.classList.add('active');
+      googleLoginBtn.disabled = true;
+      manualLoginBtn.disabled = true;
+    } else {
+      loadingDiv.classList.remove('active');
+      googleLoginBtn.disabled = false;
+      manualLoginBtn.disabled = false;
+    }
+  }
+
+  // دالة لإنشاء ID قصير
+  function generateShortId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
+  // معالجة استجابة Google
+  async function handleCredentialResponse(response) {
+    try {
+      showLoading(true);
+      
+      const token = response.credential;
+      
+      // فك تشفير بيانات JWT
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const data = JSON.parse(atob(base64));
+      
+      // التحقق من صلاحية التوكن
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (data.exp && data.exp < currentTime) {
+        showNotification('انتهت صلاحية جلسة الدخول');
+        showLoading(false);
+        return;
+      }
+      
+      // حفظ بيانات المستخدم
+      currentUser.name = data.name;
+      currentUser.email = data.email;
+      currentUser.avatar = data.picture;
+      currentUser.googleId = data.sub;
+      currentUser.userId = 'google_' + data.sub;
+      currentUser.shortId = generateShortId();
+      currentUser.isAdmin = false;
+      
+      // حفظ الجلسة في localStorage
+      localStorage.setItem('discond_user', JSON.stringify({
+        name: currentUser.name,
+        email: currentUser.email,
+        avatar: currentUser.avatar,
+        googleId: currentUser.googleId,
+        userId: currentUser.userId,
+        isGoogle: true
+      }));
+      
+      // تسجيل الدخول
+      await loginUser();
+      
+    } catch (error) {
+      console.error('خطأ في تسجيل الدخول بـ Google:', error);
+      showNotification('حدث خطأ في تسجيل الدخول', 'error');
+      showLoading(false);
+    }
+  }
+
+  // تسجيل الدخول اليدوي
+  async function handleManualLogin() {
+    const nameInput = document.getElementById('manualName');
+    const emailInput = document.getElementById('manualEmail');
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
     
     if (!name) {
       showNotification('الرجاء إدخال اسم المستخدم', 'error');
       return;
     }
     
-    // إنشاء معرف فريد قصير للمستخدم
-    currentUser.userId = 'user_' + Date.now();
-    currentUser.shortId = generateShortId();
-    currentUser.name = name;
-    currentUser.avatar = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6d8ed1&color=fff`;
-    currentUser.isAdmin = false;
+    showLoading(true);
     
+    try {
+      // إنشاء بيانات المستخدم
+      currentUser.name = name;
+      currentUser.email = email || `${name}@guest.discond.com`;
+      currentUser.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6d8ed1&color=fff`;
+      currentUser.googleId = '';
+      currentUser.userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      currentUser.shortId = generateShortId();
+      currentUser.isAdmin = false;
+      
+      // حفظ الجلسة في localStorage
+      localStorage.setItem('discond_user', JSON.stringify({
+        name: currentUser.name,
+        email: currentUser.email,
+        avatar: currentUser.avatar,
+        userId: currentUser.userId,
+        isGuest: true
+      }));
+      
+      // تسجيل الدخول
+      await loginUser();
+      
+    } catch (error) {
+      console.error('خطأ في تسجيل الدخول اليدوي:', error);
+      showNotification('حدث خطأ في تسجيل الدخول', 'error');
+      showLoading(false);
+    }
+  }
+
+  // تسجيل الدخول للمستخدم
+  async function loginUser() {
     try {
       // حفظ بيانات المستخدم في Firebase
       await set(ref(db, `users/${currentUser.userId}`), {
         name: currentUser.name,
+        email: currentUser.email,
+        googleId: currentUser.googleId,
         shortId: currentUser.shortId,
         avatar: currentUser.avatar,
         isAdmin: false,
@@ -848,6 +1043,7 @@
       // تحديث واجهة المستخدم
       profileName.textContent = currentUser.name;
       profileAvatar.src = currentUser.avatar;
+      userEmail.textContent = currentUser.email;
       userIdText.textContent = currentUser.shortId;
       
       // إخفاء شاشة التسجيل وإظهار الشات
@@ -864,11 +1060,122 @@
       // مراقبة المستخدمين المكتومين
       monitorMutedUsers();
       
+      showNotification(`مرحباً ${currentUser.name}!`, 'success');
+      
     } catch (error) {
-      console.error('خطأ في التسجيل:', error);
-      showNotification('حدث خطأ في التسجيل', 'error');
+      console.error('خطأ في حفظ بيانات المستخدم:', error);
+      showNotification('حدث خطأ في حفظ بيانات المستخدم', 'error');
+    } finally {
+      showLoading(false);
     }
-  });
+  }
+
+  // تسجيل الخروج
+  async function logout() {
+    if (confirm('هل تريد تسجيل الخروج؟')) {
+      try {
+        // مسح بيانات الجلسة
+        localStorage.removeItem('discond_user');
+        
+        // إعادة تعيين Google Sign-In إذا كان مستخدم Google
+        if (currentUser.googleId && window.google && window.google.accounts) {
+          google.accounts.id.revoke(currentUser.email, done => {
+            console.log('تم تسجيل الخروج من Google');
+          });
+        }
+        
+        // إعادة تعيين بيانات المستخدم
+        currentUser = {
+          name: '',
+          email: '',
+          avatar: '',
+          userId: '',
+          googleId: '',
+          shortId: '',
+          isAdmin: false
+        };
+        
+        // إظهار شاشة تسجيل الدخول
+        mainApp.style.display = 'none';
+        loginScreen.style.display = 'flex';
+        
+        // إعادة تعيين حقول الإدخال
+        document.getElementById('manualName').value = '';
+        document.getElementById('manualEmail').value = '';
+        
+        showNotification('تم تسجيل الخروج بنجاح', 'success');
+        
+      } catch (error) {
+        console.error('خطأ في تسجيل الخروج:', error);
+        showNotification('حدث خطأ في تسجيل الخروج', 'error');
+      }
+    }
+  }
+
+  // التحقق من وجود جلسة سابقة
+  async function checkExistingSession() {
+    const savedUser = localStorage.getItem('discond_user');
+    if (savedUser) {
+      try {
+        showLoading(true);
+        
+        const userData = JSON.parse(savedUser);
+        
+        // التحقق من صحة البيانات
+        if (userData.userId && userData.name && userData.avatar) {
+          // تعيين بيانات المستخدم
+          currentUser.name = userData.name;
+          currentUser.email = userData.email;
+          currentUser.avatar = userData.avatar;
+          currentUser.googleId = userData.googleId || '';
+          currentUser.userId = userData.userId;
+          currentUser.shortId = generateShortId();
+          currentUser.isAdmin = false;
+          
+          // تحديث واجهة المستخدم
+          profileName.textContent = currentUser.name;
+          profileAvatar.src = currentUser.avatar;
+          userEmail.textContent = currentUser.email;
+          userIdText.textContent = currentUser.shortId;
+          
+          // حفظ/تحديث بيانات المستخدم في Firebase
+          await set(ref(db, `users/${currentUser.userId}`), {
+            name: currentUser.name,
+            email: currentUser.email,
+            googleId: currentUser.googleId,
+            shortId: currentUser.shortId,
+            avatar: currentUser.avatar,
+            isAdmin: false,
+            lastSeen: serverTimestamp(),
+            joinedAt: serverTimestamp()
+          });
+          
+          // إخفاء شاشة التسجيل وإظهار الشات
+          loginScreen.style.display = 'none';
+          mainApp.style.display = 'block';
+          
+          // التركيز على حقل الرسالة
+          messageInput.focus();
+          
+          // مراقبة صلاحية الإدمن
+          monitorAdminStatus();
+          // مراقبة إعدادات الدردشة
+          monitorChatSettings();
+          // مراقبة المستخدمين المكتومين
+          monitorMutedUsers();
+          
+          showNotification(`مرحباً بعودتك ${currentUser.name}!`, 'success');
+        } else {
+          localStorage.removeItem('discond_user');
+        }
+      } catch (error) {
+        console.error('خطأ في استعادة الجلسة:', error);
+        localStorage.removeItem('discond_user');
+      } finally {
+        showLoading(false);
+      }
+    }
+  }
 
   // مراقبة صلاحية الإدمن
   function monitorAdminStatus() {
@@ -985,6 +1292,7 @@
             shortId: user.shortId || 'N/A',
             name: user.name,
             avatar: user.avatar,
+            email: user.email || '',
             isAdmin: user.isAdmin || false
           });
         }
@@ -1000,7 +1308,7 @@
                  onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6d8ed1&color=fff'">
             <div class="command-user-info">
               <div class="command-user-name">${user.name} (${user.shortId})</div>
-              <div class="command-user-id">ID: ${user.id}</div>
+              <div class="command-user-id">${user.email || 'لا يوجد بريد'}</div>
             </div>
           `;
           
@@ -1287,7 +1595,8 @@
         userAvatar: currentUser.avatar,
         text: text,
         timestamp: serverTimestamp(),
-        isAdmin: currentUser.isAdmin
+        isAdmin: currentUser.isAdmin,
+        email: currentUser.email
       });
       
       // مسح حقل الإدخال
@@ -1304,7 +1613,7 @@
   sendBtn.addEventListener('click', sendMessage);
 
   // إرسال بالإنتر
-  messageInput.addEventListener('keypress', (e) => {
+  messageInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -1428,6 +1737,43 @@
     onlineStatus.textContent = '✗ غير متصل';
     onlineStatus.style.color = '#ff4757';
   });
+
+  // تفعيل الأزرار
+  googleLoginBtn.addEventListener('click', () => {
+    // تحميل GSI يدوياً إذا لم يكن محملاً
+    if (typeof google === 'undefined' || !google.accounts) {
+      showNotification('جاري تحميل خدمة Google...', 'info');
+      
+      // إنشاء نافذة تسجيل الدخول يدوياً
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=1009347423340-movq119nqjkv18b3eus1p63ebs587daj.apps.googleusercontent.com&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=token&scope=email%20profile&prompt=select_account`;
+      
+      // فتح نافذة تسجيل الدخول
+      const authWindow = window.open(googleAuthUrl, 'google_auth', 'width=500,height=600');
+      
+      // مراقبة النافذة
+      const checkWindow = setInterval(() => {
+        if (authWindow.closed) {
+          clearInterval(checkWindow);
+          showNotification('تم إغلاق نافذة تسجيل الدخول', 'info');
+        }
+      }, 1000);
+      
+    } else {
+      // استخدام GSI إذا كان محملاً
+      google.accounts.id.prompt();
+    }
+  });
+  
+  manualLoginBtn.addEventListener('click', handleManualLogin);
+  logoutBtn.addEventListener('click', logout);
+
+  // التحقق من الجلسة عند تحميل الصفحة
+  window.addEventListener('DOMContentLoaded', () => {
+    checkExistingSession();
+  });
+
+  // جعل الدوال متاحة عالمياً لـ Google
+  window.handleCredentialResponse = handleCredentialResponse;
 
 </script>
 
