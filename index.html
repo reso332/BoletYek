@@ -1,2280 +1,1433 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Discond - دردشة مجتمعية</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5865F2;
-            --primary-light: #7289DA;
-            --secondary: #2F3136;
-            --dark: #202225;
-            --light: #F2F3F5;
-            --text: #FFFFFF;
-            --text-secondary: #B9BBBE;
-            --success: #57F287;
-            --error: #ED4245;
-            --warning: #FEE75C;
-            --google-blue: #4285F4;
-            --google-red: #EA4335;
-            --google-green: #34A853;
-            --google-yellow: #FBBC05;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Tajawal', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* شاشة تسجيل الدخول */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 480px;
-            background: rgba(32, 34, 37, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: slideUp 0.6s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(45deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .login-header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        .login-options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .google-login-btn {
-            background: var(--google-blue);
-            color: white;
-            border: none;
-            padding: 18px 24px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(66, 133, 244, 0.3);
-        }
-
-        .google-login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(66, 133, 244, 0.4);
-            background: #3a7cf4;
-        }
-
-        .google-login-btn:active {
-            transform: translateY(0);
-        }
-
-        .google-login-btn i {
-            font-size: 1.4rem;
-            background: white;
-            color: var(--google-blue);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-footer {
-            margin-top: 30px;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* التطبيق الرئيسي */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-            height: 100vh;
-            display: none;
-        }
-
-        .chat-layout {
-            display: grid;
-            grid-template-columns: 300px 1fr 280px;
-            gap: 15px;
-            height: calc(100vh - 30px);
-        }
-
-        /* الشريط الجانبي الأيسر */
-        .left-sidebar {
-            background: var(--secondary);
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .user-profile {
-            padding: 25px;
-            background: var(--dark);
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .user-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary);
-            margin-bottom: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .admin-badge {
-            background: linear-gradient(45deg, var(--error), #ff6b6b);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .user-email {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-
-        .logout-btn {
-            background: var(--error);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .logout-btn:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
-        }
-
-        /* أدوات الإدمن */
-        .admin-tools {
-            padding: 20px;
-            background: rgba(237, 66, 69, 0.1);
-            border-radius: 12px;
-            margin: 20px;
-            border: 1px solid rgba(237, 66, 69, 0.2);
-            display: none;
-        }
-
-        .admin-tools h3 {
-            color: var(--error);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .admin-btn {
-            background: var(--error);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .admin-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .admin-btn.success {
-            background: var(--success);
-        }
-
-        .admin-btn.warning {
-            background: var(--warning);
-            color: #333;
-        }
-
-        .admin-btn.secondary {
-            background: var(--primary);
-        }
-
-        /* منطقة الدردشة الرئيسية */
-        .chat-area {
-            display: flex;
-            flex-direction: column;
-            background: var(--secondary);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .chat-header {
-            padding: 20px;
-            background: var(--dark);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header h2 {
-            font-size: 1.5rem;
-            color: var(--text);
-        }
-
-        .chat-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-secondary);
-        }
-
-        .online-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .message {
-            display: flex;
-            margin-bottom: 20px;
-            animation: fadeIn 0.3s ease;
-            max-width: 100%;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.self {
-            flex-direction: row-reverse;
-        }
-
-        .message.other {
-            flex-direction: row;
-        }
-
-        .message-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 15px;
-            flex-shrink: 0;
-            border: 2px solid var(--primary);
-        }
-
-        .message-content {
-            background: var(--dark);
-            padding: 15px 20px;
-            border-radius: 18px;
-            max-width: 70%;
-            position: relative;
-            word-wrap: break-word;
-            word-break: break-word;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .message.self .message-content {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-top-right-radius: 4px;
-        }
-
-        .message.other .message-content {
-            background: var(--dark);
-            border-top-left-radius: 4px;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .message-name {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--text);
-        }
-
-        .message.admin .message-name {
-            color: var(--error);
-        }
-
-        .message-time {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .message-text {
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
-        .message.system {
-            justify-content: center;
-            max-width: 100%;
-        }
-
-        .message.system .message-content {
-            background: rgba(87, 242, 135, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-            text-align: center;
-            max-width: 80%;
-        }
-
-        .delete-btn {
-            position: absolute;
-            left: -25px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--error);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .message:hover .delete-btn {
-            display: flex;
-        }
-
-        .delete-btn:hover {
-            background: #ff5252;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        /* منطقة إدخال الرسالة */
-        .input-area {
-            padding: 20px;
-            background: var(--dark);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .message-input-container {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        #message-input {
-            flex: 1;
-            background: var(--secondary);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 15px 20px;
-            color: var(--text);
-            font-size: 1rem;
-            resize: none;
-            min-height: 60px;
-            max-height: 120px;
-            transition: all 0.3s ease;
-        }
-
-        #message-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
-        }
-
-        #send-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 0 25px;
-            height: 60px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        #send-btn:hover:not(:disabled) {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        #send-btn:disabled {
-            background: var(--text-secondary);
-            cursor: not-allowed;
-        }
-
-        /* الشريط الجانبي الأيمن */
-        .right-sidebar {
-            background: var(--secondary);
-            border-radius: 16px;
-            padding: 20px;
-            overflow-y: auto;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .online-users {
-            margin-bottom: 30px;
-        }
-
-        .online-users h3 {
-            color: var(--text);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .user-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--dark);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .user-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(-5px);
-        }
-
-        .user-item-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-
-        .user-item-info {
-            flex: 1;
-        }
-
-        .user-item-name {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.95rem;
-        }
-
-        .user-item-status {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .status-indicators {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .status-value {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        /* نافذة الأوامر */
-        .command-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-            display: none;
-        }
-
-        .command-modal-content {
-            background: var(--secondary);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .command-modal-header {
-            padding: 25px;
-            background: var(--dark);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .command-modal-header h3 {
-            color: var(--text);
-            font-size: 1.3rem;
-        }
-
-        .command-users-list {
-            padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .command-user-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--dark);
-            border-radius: 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .command-user-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(-5px);
-        }
-
-        .command-user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-
-        .command-user-info {
-            flex: 1;
-        }
-
-        .command-user-name {
-            font-weight: 700;
-            color: var(--text);
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .command-user-email {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .command-modal-footer {
-            padding: 20px;
-            background: var(--dark);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 12px 25px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-btn.cancel {
-            background: var(--text-secondary);
-            color: var(--text);
-        }
-
-        .modal-btn.cancel:hover {
-            background: #a0a0a0;
-        }
-
-        /* إشعارات */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--secondary);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 3000;
-            max-width: 350px;
-            animation: slideInRight 0.3s ease;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .notification-icon {
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .notification.success .notification-icon {
-            background: rgba(87, 242, 135, 0.2);
-            color: var(--success);
-        }
-
-        .notification.error .notification-icon {
-            background: rgba(237, 66, 69, 0.2);
-            color: var(--error);
-        }
-
-        .notification.info .notification-icon {
-            background: rgba(88, 101, 242, 0.2);
-            color: var(--primary);
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-
-        .notification-message {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        /* قفل الدردشة */
-        .chat-locked-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .chat-locked-icon {
-            font-size: 4rem;
-            color: var(--error);
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .chat-locked-title {
-            font-size: 2rem;
-            color: var(--text);
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .chat-locked-message {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 500px;
-            line-height: 1.6;
-        }
-
-        /* التجاوب مع جميع الأجهزة */
-        @media (max-width: 1200px) {
-            .chat-layout {
-                grid-template-columns: 280px 1fr;
-            }
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .chat-layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-                gap: 10px;
-            }
-            
-            .left-sidebar {
-                grid-row: 1;
-                height: auto;
-            }
-            
-            .user-profile {
-                padding: 15px;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                text-align: left;
-            }
-            
-            .user-avatar {
-                width: 60px;
-                height: 60px;
-                margin-bottom: 0;
-            }
-            
-            .user-info {
-                flex: 1;
-            }
-            
-            .admin-tools {
-                margin: 15px;
-                padding: 15px;
-            }
-            
-            .admin-buttons {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .chat-area {
-                grid-row: 2;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-            
-            .login-header h1 {
-                font-size: 2rem;
-            }
-            
-            .container {
-                padding: 10px;
-            }
-            
-            .message {
-                margin-bottom: 15px;
-            }
-            
-            .message-content {
-                max-width: 85%;
-                padding: 12px 16px;
-            }
-            
-            .message-avatar {
-                width: 40px;
-                height: 40px;
-                margin: 0 10px;
-            }
-            
-            .input-area {
-                padding: 15px;
-            }
-            
-            #send-btn {
-                padding: 0 20px;
-                height: 55px;
-            }
-            
-            #message-input {
-                padding: 12px 16px;
-                min-height: 55px;
-            }
-            
-            .command-modal-content {
-                margin: 10px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .login-screen {
-                padding: 15px;
-            }
-            
-            .login-container {
-                padding: 25px 15px;
-            }
-            
-            .google-login-btn {
-                padding: 16px 20px;
-                font-size: 1rem;
-            }
-            
-            .chat-layout {
-                gap: 8px;
-            }
-            
-            .user-profile {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-            
-            .user-info {
-                text-align: center;
-            }
-            
-            .admin-buttons {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .message {
-                margin-bottom: 12px;
-            }
-            
-            .message-content {
-                max-width: 90%;
-            }
-            
-            .message-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            
-            .message.self .message-header {
-                align-items: flex-end;
-            }
-            
-            .delete-btn {
-                left: -20px;
-                width: 20px;
-                height: 20px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .login-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .google-login-btn {
-                font-size: 0.95rem;
-            }
-            
-            .chat-header h2 {
-                font-size: 1.3rem;
-            }
-            
-            .message-content {
-                padding: 10px 14px;
-            }
-            
-            .message-text {
-                font-size: 0.95rem;
-            }
-            
-            .admin-btn {
-                padding: 10px 8px;
-                font-size: 0.8rem;
-            }
-        }
-
-        /* دعم الأجهزة اللوحية */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .chat-layout {
-                grid-template-columns: 250px 1fr;
-            }
-            
-            .message-content {
-                max-width: 75%;
-            }
-            
-            .user-avatar {
-                width: 80px;
-                height: 80px;
-            }
-        }
-
-        /* تحسينات للشاشات الكبيرة */
-        @media (min-width: 1400px) {
-            .container {
-                max-width: 1600px;
-            }
-            
-            .chat-layout {
-                grid-template-columns: 320px 1fr 320px;
-                gap: 20px;
-            }
-        }
-
-        /* دعم الوضع الأفقي للهواتف */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .login-screen {
-                padding: 10px;
-            }
-            
-            .login-container {
-                padding: 20px;
-                max-width: 90%;
-            }
-            
-            .chat-layout {
-                height: calc(100vh - 20px);
-            }
-            
-            .messages-container {
-                max-height: 60vh;
-            }
-        }
-
-        /* تحسينات عامة */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-light);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        /* رسائل الترحيب */
-        .welcome-message {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 16px;
-            margin: 20px;
-            color: white;
-        }
-
-        .welcome-message h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .welcome-message p {
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discond</title>
+<style>
+  :root {
+    --primary: #6d8ed1;
+    --primary-light: #8fa8e0;
+    --secondary: #e8f0fe;
+    --text: #333;
+    --text-light: #666;
+    --white: #fff;
+    --border: #ddd;
+    --success: #4CAF50;
+    --error: #ff4757;
+    --warning: #ffa502;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8f0fe 100%);
+    min-height: 100vh;
+    color: var(--text);
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* تسجيل الدخول */
+  .login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .login-box {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .login-box h2 {
+    color: var(--primary);
+    margin-bottom: 30px;
+    font-weight: 500;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .login-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  .login-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+  }
+  
+  .login-btn:hover {
+    background: var(--primary-light);
+  }
+  
+  /* الشات الرئيسي */
+  .chat-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    height: calc(100vh - 40px);
+  }
+  
+  /* الشريط الجانبي */
+  .sidebar {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+  }
+  
+  .user-profile {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  
+  .user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid var(--secondary);
+  }
+  
+  .user-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  
+  .admin-badge {
+    background: #ff4757;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  /* أدوات الإدمن */
+  .admin-tools {
+    background: #fff5f5;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ffcccc;
+    display: none;
+  }
+  
+  .admin-tools h3 {
+    color: #ff4757;
+    margin-bottom: 15px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .admin-tools h3:before {
+    content: "🛡️";
+  }
+  
+  .admin-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .admin-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  .admin-btn:hover {
+    background: #ff6b81;
+  }
+  
+  .admin-btn.secondary {
+    background: var(--primary);
+  }
+  
+  .admin-btn.secondary:hover {
+    background: var(--primary-light);
+  }
+  
+  .admin-btn.danger {
+    background: #ff4757;
+  }
+  
+  .admin-btn.success {
+    background: #4CAF50;
+  }
+  
+  .admin-btn.warning {
+    background: #ffa502;
+  }
+  
+  /* نافذة الأوامر */
+  .command-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  
+  .command-modal-content {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .command-modal h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .command-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .command-user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .command-user-item:hover {
+    background: #e8f0fe;
+  }
+  
+  .command-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .command-user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .command-user-name {
+    font-weight: 600;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .command-user-id {
+    font-size: 12px;
+    color: var(--text-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .command-modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  .command-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .command-cancel {
+    background: var(--border);
+    color: var(--text);
+  }
+  
+  /* منطقة الشات */
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #fafafa;
+  }
+  
+  .chat-locked {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  
+  .chat-locked h3 {
+    color: #ff4757;
+    margin-bottom: 10px;
+  }
+  
+  .message {
+    display: flex;
+    margin-bottom: 20px;
+    max-width: 80%;
+  }
+  
+  .message.other {
+    align-self: flex-start;
+  }
+  
+  .message.self {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  
+  .message.admin {
+    border-right: 3px solid #ff4757;
+  }
+  
+  .message.system {
+    border-right: 3px solid #4CAF50;
+    max-width: 100%;
+    justify-content: center;
+  }
+  
+  .message.system .message-content {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .message.muted {
+    opacity: 0.5;
+  }
+  
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 10px;
+    flex-shrink: 0;
+  }
+  
+  .message-content {
+    background: var(--secondary);
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: calc(100% - 60px);
+    position: relative;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .message.self .message-content {
+    background: var(--primary-light);
+    color: white;
+  }
+  
+  .message.admin .message-content {
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+  }
+  
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    gap: 10px;
+  }
+  
+  .message-name {
+    font-weight: 600;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .message.admin .message-name {
+    color: #ff4757;
+  }
+  
+  .message-time {
+    font-size: 12px;
+    color: var(--text-light);
+    flex-shrink: 0;
+  }
+  
+  .message.self .message-time {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .message-text {
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .delete-btn {
+    position: absolute;
+    left: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    display: none;
+  }
+  
+  .message:hover .delete-btn {
+    display: block;
+  }
+  
+  /* إدخال الرسالة */
+  .input-area {
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+    position: relative;
+  }
+  
+  .chat-locked .input-area {
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  
+  .message-input-row {
+    display: flex;
+    gap: 10px;
+  }
+  
+  #message-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    resize: none;
+    height: 60px;
+    font-family: inherit;
+  }
+  
+  #message-input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+  }
+  
+  #message-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  #send-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  
+  #send-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  #send-btn:hover:not(:disabled) {
+    background: var(--primary-light);
+  }
+  
+  .status {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: var(--text-light);
+    background: var(--secondary);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .chat-status {
+    background: #fff5f5;
+    color: #ff4757;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  /* إشعارات */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 3000;
+    animation: slideIn 0.3s ease;
+    border-right: 4px solid var(--primary);
+    max-width: 300px;
+  }
+  
+  .notification.error {
+    border-right-color: #ff4757;
+  }
+  
+  .notification.success {
+    border-right-color: #4CAF50;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* التعديل للجوال */
+  @media (max-width: 768px) {
+    .chat-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+      display: none;
+    }
+    
+    .message {
+      max-width: 90%;
+    }
+  }
+</style>
 </head>
 <body>
 
 <!-- شاشة تسجيل الدخول -->
 <div id="loginScreen" class="login-screen">
-    <div class="login-container">
-        <div class="login-header">
-            <h1><i class="fas fa-comments"></i> Discond</h1>
-            <p>انضم إلى مجتمعنا وانطلق في محادثات رائعة</p>
-        </div>
-        
-        <div class="login-options">
-            <button id="googleLoginBtn" class="google-login-btn">
-                <i class="fab fa-google"></i>
-                تسجيل الدخول بحساب Google
-            </button>
-        </div>
-        
-        <div class="login-footer">
-            <p>بالتسجيل، فإنك توافق على شروط الخدمة وسياسة الخصوصية</p>
-        </div>
-    </div>
+  <div class="login-box">
+    <h2>Welecome to Discond</h2>
+    <input type="text" id="userName" class="login-input" placeholder="اسم المستخدم" maxlength="20">
+    <input type="text" id="userAvatar" class="login-input" placeholder="رابط الصورة (اختياري)">
+    <p style="color: var(--text-light); font-size: 14px; margin-bottom: 20px;">يمكنك ترك رابط الصورة فارغاً</p>
+    
+    <button id="loginBtn" class="login-btn">ابدأ الدردشة</button>
+  </div>
 </div>
 
 <!-- نافذة الأوامر -->
-<div id="commandModal" class="command-modal">
-    <div class="command-modal-content">
-        <div class="command-modal-header">
-            <h3 id="commandModalTitle">اختر المستخدم</h3>
-        </div>
-        <div class="command-users-list" id="commandUsersList">
-            <!-- قائمة المستخدمين تظهر هنا -->
-        </div>
-        <div class="command-modal-footer">
-            <button id="commandCancelBtn" class="modal-btn cancel">إلغاء</button>
-        </div>
+<div id="commandModal" class="command-modal" style="display: none;">
+  <div class="command-modal-content">
+    <h3 id="commandModalTitle">اختر المستخدم</h3>
+    <div class="command-users-list" id="commandUsersList">
+      <!-- قائمة المستخدمين تظهر هنا -->
     </div>
+    <div class="command-modal-buttons">
+      <button id="commandCancelBtn" class="command-btn command-cancel">إلغاء</button>
+    </div>
+  </div>
 </div>
 
-<!-- التطبيق الرئيسي -->
-<div class="container" id="mainApp">
-    <div class="chat-layout">
-        
-        <!-- الشريط الجانبي الأيسر -->
-        <div class="left-sidebar">
-            <div class="user-profile">
-                <img id="profileAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=مستخدم&background=5865F2&color=fff" alt="صورة الملف">
-                <div class="user-info">
-                    <div class="user-name">
-                        <span id="profileName">جار التحميل...</span>
-                        <span id="adminBadge" class="admin-badge" style="display: none;">👑 إدمن</span>
-                    </div>
-                    <div class="user-email" id="profileEmail">user@example.com</div>
-                    <div class="user-id">ID: <span id="userIdText">---</span></div>
-                </div>
-                <button id="logoutBtn" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    تسجيل الخروج
-                </button>
-            </div>
-            
-            <!-- أدوات الإدمن -->
-            <div id="adminTools" class="admin-tools">
-                <h3><i class="fas fa-shield-alt"></i> أدوات الإدمن</h3>
-                
-                <div class="admin-buttons">
-                    <button id="lockBtn" class="admin-btn">
-                        <i class="fas fa-lock"></i> قفل
-                    </button>
-                    <button id="unlockBtn" class="admin-btn success">
-                        <i class="fas fa-unlock"></i> فتح
-                    </button>
-                    <button id="muteBtn" class="admin-btn warning">
-                        <i class="fas fa-volume-mute"></i> كتم
-                    </button>
-                    <button id="unmuteBtn" class="admin-btn warning">
-                        <i class="fas fa-volume-up"></i> إزالة كتم
-                    </button>
-                    <button id="roleBtn" class="admin-btn secondary">
-                        <i class="fas fa-crown"></i> ترقية
-                    </button>
-                    <button id="unroleBtn" class="admin-btn secondary">
-                        <i class="fas fa-user"></i> إزالة ترقية
-                    </button>
-                    <button id="clearChatBtn" class="admin-btn">
-                        <i class="fas fa-trash"></i> مسح
-                    </button>
-                    <button id="statsBtn" class="admin-btn secondary">
-                        <i class="fas fa-chart-bar"></i> إحصائيات
-                    </button>
-                </div>
-                
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 15px; text-align: center;">
-                    اضغط على الزر لعرض قائمة المستخدمين وتنفيذ الأمر
-                </p>
-            </div>
+<!-- الشات الرئيسي -->
+<div class="container" style="display: none;" id="mainApp">
+  <div class="chat-layout">
+    
+    <!-- منطقة الدردشة -->
+    <div class="chat-area">
+      <!-- حالة قفل الدردشة -->
+      <div id="chatLocked" class="chat-locked" style="display: none;">
+        <h3>🔒 الدردشة مغلقة مؤقتاً</h3>
+        <p id="lockReason">سيتم فتح الدردشة قريباً...</p>
+        <p id="lockTime" style="font-size: 12px; color: #666;"></p>
+      </div>
+      
+      <div id="messagesContainer" class="messages-container">
+        <!-- الرسائل تظهر هنا -->
+      </div>
+      
+      <div class="input-area">
+        <div class="message-input-row">
+          <textarea id="message-input" placeholder="اكتب رسالتك هنا..."></textarea>
+          <button id="send-btn">إرسال</button>
         </div>
-        
-        <!-- منطقة الدردشة الرئيسية -->
-        <div class="chat-area">
-            <!-- حالة قفل الدردشة -->
-            <div id="chatLocked" class="chat-locked-overlay" style="display: none;">
-                <div class="chat-locked-icon">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h2 class="chat-locked-title">🔒 الدردشة مغلقة</h2>
-                <p id="lockReason" class="chat-locked-message">
-                    الدردشة مغلقة مؤقتاً من قبل الإدمن
-                </p>
-                <p id="lockTime" style="color: var(--text-secondary); margin-top: 15px; font-size: 0.9rem;"></p>
-            </div>
-            
-            <div class="chat-header">
-                <h2><i class="fas fa-comments"></i> الدردشة العامة</h2>
-                <div class="chat-status">
-                    <span class="online-dot"></span>
-                    <span id="onlineStatus">متصل</span>
-                    <span id="userCount">• 0 مستخدم</span>
-                </div>
-            </div>
-            
-            <div id="messagesContainer" class="messages-container">
-                <!-- الرسائل تظهر هنا -->
-                <div class="welcome-message">
-                    <h3>🎉 مرحباً في Discond!</h3>
-                    <p>ابدأ المحادثة مع الأصدقاء، هذه بداية رائعة للتواصل الاجتماعي</p>
-                </div>
-            </div>
-            
-            <div class="input-area">
-                <div class="message-input-container">
-                    <textarea 
-                        id="message-input" 
-                        placeholder="اكتب رسالتك هنا... (اضغط Enter للإرسال، Shift+Enter للسطر الجديد)"
-                        rows="1"
-                    ></textarea>
-                    <button id="send-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        إرسال
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- الشريط الجانبي الأيمن -->
-        <div class="right-sidebar">
-            <div class="online-users">
-                <h3><i class="fas fa-users"></i> الأعضاء المتصلون</h3>
-                <div id="onlineUsersList" class="user-list">
-                    <!-- قائمة الأعضاء تظهر هنا -->
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i> جاري تحميل الأعضاء...
-                    </div>
-                </div>
-            </div>
-            
-            <div class="status-indicators">
-                <div class="status-item">
-                    <span class="status-label">عدد الرسائل:</span>
-                    <span id="messageCount" class="status-value">0</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">الأعضاء النشطين:</span>
-                    <span id="activeUsersCount" class="status-value">0</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">حالة الخادم:</span>
-                    <span id="serverStatus" class="status-value" style="color: var(--success);">✓ نشط</span>
-                </div>
-            </div>
-        </div>
+      </div>
+      
+      <div class="status">
+        <span id="onlineStatus">✓ متصل</span>
+        • <span id="messageCount">0 رسالة</span>
+      </div>
     </div>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar">
+      <div class="user-profile">
+        <img id="profileAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=مستخدم&background=6d8ed1&color=fff" alt="صورة الملف">
+        <div class="user-name" id="profileName">
+          <span id="adminBadge" class="admin-badge" style="display: none;">إدمن</span>
+          اسم المستخدم
+        </div>
+        <div style="color: var(--text-light); font-size: 14px; margin-bottom: 10px;">مستخدم نشط</div>
+        <div style="color: var(--primary); font-size: 12px; background: #e8f0fe; padding: 5px 10px; border-radius: 15px;">
+          ID: <span id="userIdText">---</span>
+        </div>
+      </div>
+      
+      <!-- أدوات الإدمن -->
+      <div id="adminTools" class="admin-tools">
+        <h3>أدوات الإدمن</h3>
+        
+        <div class="admin-buttons">
+          <button id="lockBtn" class="admin-btn danger">
+            <span>🔒</span> قفل
+          </button>
+          <button id="unlockBtn" class="admin-btn success">
+            <span>🔓</span> فتح
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button id="muteBtn" class="admin-btn warning">
+            <span>🤫</span> كتم
+          </button>
+          <button id="unmuteBtn" class="admin-btn warning">
+            <span>🎤</span> إزالة كتم
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button id="roleBtn" class="admin-btn secondary">
+            <span>👑</span> ترقية
+          </button>
+          <button id="unroleBtn" class="admin-btn secondary">
+            <span>👤</span> إزالة ترقية
+          </button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+          <button id="clearChatBtn" class="admin-btn danger" style="width: 100%;">
+            <span>🗑️</span> مسح المحادثة
+          </button>
+        </div>
+        
+        <div style="font-size: 11px; color: #666; margin-top: 10px; text-align: center;">
+          اضغط على الزر لعرض قائمة المستخدمين
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="module">
-    // استيراد مكتبات Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { 
-        getDatabase, 
-        ref, 
-        push, 
-        set, 
-        onChildAdded, 
-        onValue, 
-        remove, 
-        serverTimestamp,
-        get,
-        update,
-        query,
-        orderByChild,
-        equalTo
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, set, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+  // إعداد Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8jmHxQ5tIwuh9J_Y9TpovequFVigiXYw",
+    authDomain: "disconde-17f43.firebaseapp.com",
+    databaseURL: "https://disconde-17f43-default-rtdb.firebaseio.com",
+    projectId: "disconde-17f43",
+    storageBucket: "disconde-17f43.firebasestorage.app",
+    messagingSenderId: "1009347423340",
+    appId: "1:1009347423340:web:a86dee5c542544ab223c49",
+    measurementId: "G-8Q05LMTRDX"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // مراجع قاعدة البيانات
+  const messagesRef = ref(db, 'messages');
+  const usersRef = ref(db, 'users');
+  const chatSettingsRef = ref(db, 'settings/chat');
+  const mutedUsersRef = ref(db, 'mutedUsers');
+
+  // العناصر في الصفحة
+  const loginScreen = document.getElementById('loginScreen');
+  const mainApp = document.getElementById('mainApp');
+  const loginBtn = document.getElementById('loginBtn');
+  const userNameInput = document.getElementById('userName');
+  const userAvatarInput = document.getElementById('userAvatar');
+  const profileName = document.getElementById('profileName');
+  const profileAvatar = document.getElementById('profileAvatar');
+  const adminBadge = document.getElementById('adminBadge');
+  const userIdText = document.getElementById('userIdText');
+  const messagesContainer = document.getElementById('messagesContainer');
+  const messageInput = document.getElementById('message-input');
+  const sendBtn = document.getElementById('send-btn');
+  const messageCount = document.getElementById('messageCount');
+  const onlineStatus = document.getElementById('onlineStatus');
+  const chatLocked = document.getElementById('chatLocked');
+  const lockReason = document.getElementById('lockReason');
+  const lockTime = document.getElementById('lockTime');
+  
+  // أدوات الإدمن
+  const adminTools = document.getElementById('adminTools');
+  const lockBtn = document.getElementById('lockBtn');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  const unmuteBtn = document.getElementById('unmuteBtn');
+  const roleBtn = document.getElementById('roleBtn');
+  const unroleBtn = document.getElementById('unroleBtn');
+  const clearChatBtn = document.getElementById('clearChatBtn');
+  
+  // نافذة الأوامر
+  const commandModal = document.getElementById('commandModal');
+  const commandModalTitle = document.getElementById('commandModalTitle');
+  const commandUsersList = document.getElementById('commandUsersList');
+  const commandCancelBtn = document.getElementById('commandCancelBtn');
+
+  // دالة لإنشاء ID قصير
+  function generateShortId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
+  // بيانات المستخدم الحالي
+  let currentUser = {
+    name: '',
+    avatar: '',
+    userId: '',
+    shortId: '',
+    isAdmin: false
+  };
+
+  // متغيرات التحكم
+  let chatLockedUntil = null;
+  let mutedUsers = {};
+  let messageCountValue = 0;
+  let currentCommand = '';
+
+  // عرض إشعار
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
     
-    import { 
-        getAuth, 
-        GoogleAuthProvider, 
-        signInWithPopup, 
-        signOut,
-        onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
 
-    // تكوين Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyC8jmHxQ5tIwuh9J_Y9TpovequFVigiXYw",
-        authDomain: "disconde-17f43.firebaseapp.com",
-        databaseURL: "https://disconde-17f43-default-rtdb.firebaseio.com",
-        projectId: "disconde-17f43",
-        storageBucket: "disconde-17f43.firebasestorage.app",
-        messagingSenderId: "1009347423340",
-        appId: "1:1009347423340:web:a86dee5c542544ab223c49",
-        measurementId: "G-8Q05LMTRDX"
-    };
-
-    // تهيئة Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    // مراجع Firebase
-    const messagesRef = ref(db, 'messages');
-    const usersRef = ref(db, 'users');
-    const chatSettingsRef = ref(db, 'settings/chat');
-    const mutedUsersRef = ref(db, 'mutedUsers');
-    const onlineUsersRef = ref(db, 'onlineUsers');
-
-    // عناصر DOM
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const profileName = document.getElementById('profileName');
-    const profileEmail = document.getElementById('profileEmail');
-    const profileAvatar = document.getElementById('profileAvatar');
-    const userIdText = document.getElementById('userIdText');
-    const adminBadge = document.getElementById('adminBadge');
-    const adminTools = document.getElementById('adminTools');
-    const messagesContainer = document.getElementById('messagesContainer');
-    const messageInput = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
-    const onlineUsersList = document.getElementById('onlineUsersList');
-    const messageCount = document.getElementById('messageCount');
-    const userCount = document.getElementById('userCount');
-    const activeUsersCount = document.getElementById('activeUsersCount');
-    const onlineStatus = document.getElementById('onlineStatus');
-    const chatLocked = document.getElementById('chatLocked');
-    const lockReason = document.getElementById('lockReason');
-    const lockTime = document.getElementById('lockTime');
-    const serverStatus = document.getElementById('serverStatus');
-
-    // عناصر أدوات الإدمن
-    const lockBtn = document.getElementById('lockBtn');
-    const unlockBtn = document.getElementById('unlockBtn');
-    const muteBtn = document.getElementById('muteBtn');
-    const unmuteBtn = document.getElementById('unmuteBtn');
-    const roleBtn = document.getElementById('roleBtn');
-    const unroleBtn = document.getElementById('unroleBtn');
-    const clearChatBtn = document.getElementById('clearChatBtn');
-    const statsBtn = document.getElementById('statsBtn');
-
-    // نافذة الأوامر
-    const commandModal = document.getElementById('commandModal');
-    const commandModalTitle = document.getElementById('commandModalTitle');
-    const commandUsersList = document.getElementById('commandUsersList');
-    const commandCancelBtn = document.getElementById('commandCancelBtn');
-
-    // بيانات المستخدم الحالي
-    let currentUser = {
-        uid: '',
-        name: '',
-        email: '',
-        photoURL: '',
-        shortId: '',
-        isAdmin: false
-    };
-
-    // متغيرات النظام
-    let chatLockedUntil = null;
-    let mutedUsers = {};
-    let onlineUsers = {};
-    let currentCommand = '';
-    let messageCounter = 0;
-    let userCounter = 0;
-
-    // ========== وظائف النظام ==========
-
-    // إظهار إشعار
-    function showNotification(title, message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        
-        const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
-        const iconClass = type === 'success' ? 'fas fa-check-circle' : 
-                         type === 'error' ? 'fas fa-exclamation-circle' : 
-                         'fas fa-info-circle';
-        
-        notification.innerHTML = `
-            <div class="notification-icon">
-                <i class="${iconClass}"></i>
-            </div>
-            <div class="notification-content">
-                <div class="notification-title">${title}</div>
-                <div class="notification-message">${message}</div>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // إزالة الإشعار بعد 5 ثواني
-        setTimeout(() => {
-            notification.style.animation = 'slideInRight 0.3s ease reverse';
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
+  // تسجيل الدخول
+  loginBtn.addEventListener('click', async () => {
+    const name = userNameInput.value.trim();
+    const avatar = userAvatarInput.value.trim();
+    
+    if (!name) {
+      showNotification('الرجاء إدخال اسم المستخدم', 'error');
+      return;
     }
-
-    // توليد ID قصير
-    function generateShortId() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < 6; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
+    
+    // إنشاء معرف فريد قصير للمستخدم
+    currentUser.userId = 'user_' + Date.now();
+    currentUser.shortId = generateShortId();
+    currentUser.name = name;
+    currentUser.avatar = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6d8ed1&color=fff`;
+    currentUser.isAdmin = false;
+    
+    try {
+      // حفظ بيانات المستخدم في Firebase
+      await set(ref(db, `users/${currentUser.userId}`), {
+        name: currentUser.name,
+        shortId: currentUser.shortId,
+        avatar: currentUser.avatar,
+        isAdmin: false,
+        lastSeen: serverTimestamp(),
+        joinedAt: serverTimestamp()
+      });
+      
+      // تحديث واجهة المستخدم
+      profileName.textContent = currentUser.name;
+      profileAvatar.src = currentUser.avatar;
+      userIdText.textContent = currentUser.shortId;
+      
+      // إخفاء شاشة التسجيل وإظهار الشات
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+      
+      // التركيز على حقل الرسالة
+      messageInput.focus();
+      
+      // مراقبة صلاحية الإدمن
+      monitorAdminStatus();
+      // مراقبة إعدادات الدردشة
+      monitorChatSettings();
+      // مراقبة المستخدمين المكتومين
+      monitorMutedUsers();
+      
+    } catch (error) {
+      console.error('خطأ في التسجيل:', error);
+      showNotification('حدث خطأ في التسجيل', 'error');
     }
+  });
 
-    // تسجيل دخول جوجل
-    googleLoginBtn.addEventListener('click', async () => {
-        try {
-            googleLoginBtn.disabled = true;
-            googleLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
-            
-            const result = await signInWithPopup(auth, provider);
-            
-            showNotification('نجاح', 'تم تسجيل الدخول بنجاح!', 'success');
-            
-        } catch (error) {
-            console.error('خطأ في تسجيل الدخول:', error);
-            
-            let errorMessage = 'حدث خطأ أثناء تسجيل الدخول';
-            if (error.code === 'auth/popup-closed-by-user') {
-                errorMessage = 'تم إغلاق نافذة تسجيل الدخول';
-            } else if (error.code === 'auth/network-request-failed') {
-                errorMessage = 'خطأ في الاتصال بالإنترنت';
-            }
-            
-            showNotification('خطأ', errorMessage, 'error');
-            
-            googleLoginBtn.disabled = false;
-            googleLoginBtn.innerHTML = '<i class="fab fa-google"></i> تسجيل الدخول بحساب Google';
-        }
-    });
-
-    // تسجيل خروج
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            // إزالة المستخدم من قائمة المتصلين
-            if (currentUser.uid) {
-                await remove(ref(db, `onlineUsers/${currentUser.uid}`));
-                await remove(ref(db, `users/${currentUser.uid}/online`));
-            }
-            
-            // تسجيل الخروج من Firebase Auth
-            await signOut(auth);
-            
-            showNotification('نجاح', 'تم تسجيل الخروج بنجاح', 'success');
-            
-        } catch (error) {
-            console.error('خطأ في تسجيل الخروج:', error);
-            showNotification('خطأ', 'حدث خطأ أثناء تسجيل الخروج', 'error');
-        }
-    });
-
-    // مراقبة حالة المصادقة
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            // تم تسجيل الدخول
-            await handleUserLogin(user);
+  // مراقبة صلاحية الإدمن
+  function monitorAdminStatus() {
+    const userRef = ref(db, `users/${currentUser.userId}/isAdmin`);
+    
+    onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const isAdmin = snapshot.val();
+        currentUser.isAdmin = isAdmin;
+        
+        if (isAdmin) {
+          adminBadge.style.display = 'inline-block';
+          adminTools.style.display = 'block';
+          profileName.style.color = '#ff4757';
         } else {
-            // تم تسجيل الخروج
-            handleUserLogout();
+          adminBadge.style.display = 'none';
+          adminTools.style.display = 'none';
+          profileName.style.color = '';
         }
+      }
     });
+  }
 
-    // معالجة تسجيل الدخول
-    async function handleUserLogin(firebaseUser) {
-        try {
-            // تحديث بيانات المستخدم الحالي
-            currentUser.uid = firebaseUser.uid;
-            currentUser.name = firebaseUser.displayName || 'مستخدم بدون اسم';
-            currentUser.email = firebaseUser.email;
-            currentUser.photoURL = firebaseUser.photoURL || 
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}&background=5865F2&color=fff`;
-            currentUser.shortId = generateShortId();
+  // مراقبة إعدادات الدردشة
+  function monitorChatSettings() {
+    onValue(chatSettingsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const settings = snapshot.val();
+        
+        // التحقق من حالة القفل
+        if (settings.isLocked) {
+          chatLocked.style.display = 'flex';
+          messageInput.disabled = true;
+          sendBtn.disabled = true;
+          
+          lockReason.textContent = settings.lockReason || 'الدردشة مغلقة مؤقتاً من قبل الإدمن';
+          
+          if (settings.lockedUntil) {
+            const lockDate = new Date(settings.lockedUntil);
+            const now = new Date();
+            const diff = lockDate - now;
             
-            // حفظ بيانات المستخدم في قاعدة البيانات
-            const userData = {
-                uid: currentUser.uid,
-                name: currentUser.name,
-                email: currentUser.email,
-                photoURL: currentUser.photoURL,
-                shortId: currentUser.shortId,
-                isAdmin: false,
-                lastSeen: serverTimestamp(),
-                joinedAt: serverTimestamp(),
-                online: true
-            };
-            
-            await set(ref(db, `users/${currentUser.uid}`), userData);
-            
-            // إضافة المستخدم إلى قائمة المتصلين
-            await set(ref(db, `onlineUsers/${currentUser.uid}`), {
-                name: currentUser.name,
-                photoURL: currentUser.photoURL,
-                shortId: currentUser.shortId,
-                joinedAt: serverTimestamp()
-            });
-            
-            // تحديث واجهة المستخدم
-            updateUserUI();
-            
-            // تبديل الشاشات
-            loginScreen.style.display = 'none';
-            mainApp.style.display = 'block';
-            
-            // إرسال رسالة ترحيب
-            await sendWelcomeMessage();
-            
-            // بدء مراقبة البيانات
-            startDataMonitoring();
-            
-            // تركيز على حقل الكتابة
-            setTimeout(() => messageInput.focus(), 500);
-            
-        } catch (error) {
-            console.error('خطأ في معالجة تسجيل الدخول:', error);
-            showNotification('خطأ', 'حدث خطأ أثناء تحميل البيانات', 'error');
-        }
-    }
-
-    // معالجة تسجيل الخروج
-    function handleUserLogout() {
-        // إعادة تعيين بيانات المستخدم
-        currentUser = {
-            uid: '',
-            name: '',
-            email: '',
-            photoURL: '',
-            shortId: '',
-            isAdmin: false
-        };
-        
-        // إعادة تعيين الواجهة
-        loginScreen.style.display = 'flex';
-        mainApp.style.display = 'none';
-        
-        // إعادة تعيين زر تسجيل الدخول
-        googleLoginBtn.disabled = false;
-        googleLoginBtn.innerHTML = '<i class="fab fa-google"></i> تسجيل الدخول بحساب Google';
-    }
-
-    // تحديث واجهة المستخدم
-    function updateUserUI() {
-        profileName.textContent = currentUser.name;
-        profileEmail.textContent = currentUser.email;
-        profileAvatar.src = currentUser.photoURL;
-        userIdText.textContent = currentUser.shortId;
-    }
-
-    // إرسال رسالة ترحيب
-    async function sendWelcomeMessage() {
-        try {
-            await push(messagesRef, {
-                type: 'system',
-                userId: 'system',
-                userName: 'النظام',
-                userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                text: `🎉 انضم ${currentUser.name} إلى الدردشة!`,
-                timestamp: serverTimestamp()
-            });
-        } catch (error) {
-            console.error('خطأ في إرسال رسالة الترحيب:', error);
-        }
-    }
-
-    // بدء مراقبة البيانات
-    function startDataMonitoring() {
-        monitorAdminStatus();
-        monitorChatSettings();
-        monitorMutedUsers();
-        monitorOnlineUsers();
-        monitorMessages();
-        monitorUserCount();
-    }
-
-    // مراقبة صلاحيات الإدمن
-    function monitorAdminStatus() {
-        const adminRef = ref(db, `users/${currentUser.uid}/isAdmin`);
-        
-        onValue(adminRef, (snapshot) => {
-            if (snapshot.exists()) {
-                currentUser.isAdmin = snapshot.val();
-                
-                if (currentUser.isAdmin) {
-                    adminBadge.style.display = 'inline-block';
-                    adminTools.style.display = 'block';
-                } else {
-                    adminBadge.style.display = 'none';
-                    adminTools.style.display = 'none';
-                }
-            }
-        });
-    }
-
-    // مراقبة إعدادات الدردشة
-    function monitorChatSettings() {
-        onValue(chatSettingsRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const settings = snapshot.val();
-                
-                if (settings.isLocked) {
-                    chatLocked.style.display = 'flex';
-                    messageInput.disabled = true;
-                    sendBtn.disabled = true;
-                    
-                    lockReason.textContent = settings.lockReason || 'الدردشة مغلقة مؤقتاً من قبل الإدمن';
-                    
-                    if (settings.lockedUntil) {
-                        const lockDate = new Date(settings.lockedUntil);
-                        const now = new Date();
-                        const diff = lockDate - now;
-                        
-                        if (diff > 0) {
-                            const minutes = Math.ceil(diff / (1000 * 60));
-                            lockTime.textContent = `ستفتح بعد ${minutes} دقيقة`;
-                            chatLockedUntil = settings.lockedUntil;
-                        } else {
-                            // انتهت مدة القفل
-                            update(chatSettingsRef, {
-                                isLocked: false,
-                                lockedBy: null,
-                                lockReason: null,
-                                lockedUntil: null,
-                                lockedAt: null
-                            });
-                        }
-                    }
-                } else {
-                    chatLocked.style.display = 'none';
-                    messageInput.disabled = false;
-                    sendBtn.disabled = false;
-                    chatLockedUntil = null;
-                }
-            }
-        });
-    }
-
-    // مراقبة المستخدمين المكتومين
-    function monitorMutedUsers() {
-        onValue(mutedUsersRef, (snapshot) => {
-            mutedUsers = snapshot.exists() ? snapshot.val() : {};
-        });
-    }
-
-    // مراقبة المستخدمين المتصلين
-    function monitorOnlineUsers() {
-        onValue(onlineUsersRef, (snapshot) => {
-            onlineUsers = snapshot.exists() ? snapshot.val() : {};
-            updateOnlineUsersList();
-        });
-    }
-
-    // تحديث قائمة المتصلين
-    function updateOnlineUsersList() {
-        if (Object.keys(onlineUsers).length === 0) {
-            onlineUsersList.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><p>لا يوجد مستخدمون متصلون</p></div>';
-            return;
-        }
-        
-        let usersHTML = '';
-        Object.entries(onlineUsers).forEach(([userId, user]) => {
-            if (userId === currentUser.uid) return;
-            
-            usersHTML += `
-                <div class="user-item">
-                    <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=مستخدم&background=5865F2&color=fff'}" 
-                         class="user-item-avatar" 
-                         alt="${user.name}"
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=5865F2&color=fff'">
-                    <div class="user-item-info">
-                        <div class="user-item-name">${user.name}</div>
-                        <div class="user-item-status">${user.shortId}</div>
-                    </div>
-                    <div class="online-dot"></div>
-                </div>
-            `;
-        });
-        
-        onlineUsersList.innerHTML = usersHTML || '<div class="empty-state"><i class="fas fa-user"></i><p>أنت المستخدم الوحيد المتصل</p></div>';
-    }
-
-    // مراقبة الرسائل
-    function monitorMessages() {
-        // إزالة رسالة الترحيب الافتراضية
-        const welcomeMessage = messagesContainer.querySelector('.welcome-message');
-        if (welcomeMessage) {
-            welcomeMessage.remove();
-        }
-        
-        onChildAdded(messagesRef, (snapshot) => {
-            const message = snapshot.val();
-            displayMessage(message, snapshot.key);
-        });
-    }
-
-    // عرض الرسالة
-    function displayMessage(message, messageId) {
-        const messageDiv = document.createElement('div');
-        
-        // تحديد فئة الرسالة
-        let messageClass = 'message';
-        if (message.userId === currentUser.uid) {
-            messageClass += ' self';
-        } else if (message.userId === 'system') {
-            messageClass += ' system';
-        } else {
-            messageClass += ' other';
-        }
-        
-        if (message.isAdmin) {
-            messageClass += ' admin';
-        }
-        
-        messageDiv.className = messageClass;
-        messageDiv.dataset.messageId = messageId;
-        
-        // تنسيق الوقت
-        const time = message.timestamp ? new Date(message.timestamp) : new Date();
-        const timeString = time.toLocaleTimeString('ar-EG', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-        });
-        
-        // إنشاء محتوى الرسالة
-        if (message.type === 'system') {
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-text">${message.text}</div>
-                </div>
-            `;
-        } else {
-            const displayName = `${message.userName || 'مستخدم'} (${message.shortId || '000000'})`;
-            
-            messageDiv.innerHTML = `
-                <img src="${message.userAvatar || 'https://ui-avatars.com/api/?name=مستخدم&background=5865F2&color=fff'}" 
-                     class="message-avatar" 
-                     alt="${message.userName}"
-                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(message.userName)}&background=5865F2&color=fff'">
-                <div class="message-content">
-                    <div class="message-header">
-                        <span class="message-name">${displayName} ${message.isAdmin ? '👑' : ''}</span>
-                        <span class="message-time">${timeString}</span>
-                    </div>
-                    <div class="message-text">${message.text}</div>
-                </div>
-                ${currentUser.isAdmin && message.userId !== 'system' ? 
-                    `<button class="delete-btn" onclick="deleteMessage('${messageId}')"><i class="fas fa-trash"></i></button>` : ''}
-            `;
-        }
-        
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // زيادة عداد الرسائل
-        messageCounter++;
-        messageCount.textContent = messageCounter;
-    }
-
-    // مراقبة عدد المستخدمين
-    function monitorUserCount() {
-        onValue(usersRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const users = snapshot.val();
-                userCounter = Object.keys(users).length;
-                userCount.textContent = `• ${userCounter} مستخدم`;
-                activeUsersCount.textContent = Object.keys(onlineUsers).length;
-            }
-        });
-    }
-
-    // ========== إرسال الرسائل ==========
-
-    // إرسال الرسالة
-    sendBtn.addEventListener('click', sendMessage);
-
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    // ضبط ارتفاع حقل الإدخال تلقائياً
-    messageInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-
-    async function sendMessage() {
-        const text = messageInput.value.trim();
-        
-        if (!text) {
-            showNotification('تنبيه', 'الرجاء كتابة رسالة', 'error');
-            return;
-        }
-        
-        // التحقق من كتم المستخدم
-        if (mutedUsers[currentUser.uid]) {
-            const muteInfo = mutedUsers[currentUser.uid];
-            if (muteInfo.mutedUntil && new Date(muteInfo.mutedUntil) > new Date()) {
-                showNotification('مكتوم', 'أنت مكتوم ولا يمكنك إرسال الرسائل', 'error');
-                return;
-            }
-        }
-        
-        // التحقق من قفل الدردشة
-        if (chatLockedUntil && !currentUser.isAdmin) {
-            showNotification('مقفول', 'الدردشة مغلقة حالياً', 'error');
-            return;
-        }
-        
-        try {
-            // إرسال الرسالة
-            await push(messagesRef, {
-                userId: currentUser.uid,
-                shortId: currentUser.shortId,
-                userName: currentUser.name,
-                userAvatar: currentUser.photoURL,
-                text: text,
-                timestamp: serverTimestamp(),
-                isAdmin: currentUser.isAdmin
-            });
-            
-            // مسح حقل الإدخال
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            
-            // إخفاء لوحة الأوامر إذا كانت مفتوحة
-            commandModal.style.display = 'none';
-            
-        } catch (error) {
-            console.error('خطأ في إرسال الرسالة:', error);
-            showNotification('خطأ', 'حدث خطأ أثناء إرسال الرسالة', 'error');
-        }
-    }
-
-    // ========== أدوات الإدمن ==========
-
-    // قفل الدردشة
-    lockBtn.addEventListener('click', () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        showCommandModal('lock', 'قفل الدردشة');
-    });
-
-    // فتح الدردشة
-    unlockBtn.addEventListener('click', async () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        
-        try {
-            await update(chatSettingsRef, {
+            if (diff > 0) {
+              const minutes = Math.ceil(diff / (1000 * 60));
+              lockTime.textContent = `ستفتح بعد ${minutes} دقيقة`;
+              chatLockedUntil = settings.lockedUntil;
+            } else {
+              // انتهت مدة القفل
+              set(chatSettingsRef, {
                 isLocked: false,
                 lockedBy: null,
                 lockReason: null,
                 lockedUntil: null,
                 lockedAt: null
-            });
-            
-            // إرسال رسالة نظام
-            await push(messagesRef, {
-                type: 'system',
-                userId: 'system',
-                userName: 'النظام',
-                userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                text: `🔓 قام ${currentUser.name} بفتح الدردشة`,
-                timestamp: serverTimestamp()
-            });
-            
-            showNotification('نجاح', 'تم فتح الدردشة بنجاح', 'success');
-        } catch (error) {
-            console.error('خطأ في فتح الدردشة:', error);
-            showNotification('خطأ', 'حدث خطأ أثناء فتح الدردشة', 'error');
-        }
-    });
-
-    // كتم مستخدم
-    muteBtn.addEventListener('click', () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        showCommandModal('mute', 'كتم مستخدم');
-    });
-
-    // إزالة كتم
-    unmuteBtn.addEventListener('click', () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        showCommandModal('unmute', 'إزالة كتم مستخدم');
-    });
-
-    // ترقية لإدمن
-    roleBtn.addEventListener('click', () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        showCommandModal('role', 'ترقية مستخدم لإدمن');
-    });
-
-    // إزالة ترقية
-    unroleBtn.addEventListener('click', () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        showCommandModal('unrole', 'إزالة صلاحيات الإدمن');
-    });
-
-    // مسح المحادثة
-    clearChatBtn.addEventListener('click', async () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        
-        if (confirm('⚠️ هل أنت متأكد من مسح جميع الرسائل؟\nهذا الإجراء لا يمكن التراجع عنه.')) {
-            try {
-                await remove(messagesRef);
-                
-                // إرسال رسالة نظام
-                await push(messagesRef, {
-                    type: 'system',
-                    userId: 'system',
-                    userName: 'النظام',
-                    userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                    text: `🗑️ قام ${currentUser.name} بمسح جميع الرسائل`,
-                    timestamp: serverTimestamp()
-                });
-                
-                showNotification('نجاح', 'تم مسح جميع الرسائل بنجاح', 'success');
-            } catch (error) {
-                console.error('خطأ في مسح الرسائل:', error);
-                showNotification('خطأ', 'حدث خطأ أثناء مسح الرسائل', 'error');
+              });
             }
+          }
+        } else {
+          chatLocked.style.display = 'none';
+          messageInput.disabled = false;
+          sendBtn.disabled = false;
+          chatLockedUntil = null;
         }
+      } else {
+        // إذا لم توجد إعدادات، إنشاء إعدادات افتراضية
+        set(chatSettingsRef, {
+          isLocked: false,
+          lockedBy: null,
+          lockReason: null,
+          lockedUntil: null,
+          lockedAt: null
+        });
+      }
     });
+  }
 
-    // الإحصائيات
-    statsBtn.addEventListener('click', async () => {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        
-        try {
-            const usersSnapshot = await get(usersRef);
-            const messagesSnapshot = await get(messagesRef);
-            const onlineSnapshot = await get(onlineUsersRef);
-            
-            const totalUsers = usersSnapshot.exists() ? Object.keys(usersSnapshot.val()).length : 0;
-            const totalMessages = messagesSnapshot.exists() ? Object.keys(messagesSnapshot.val()).length : 0;
-            const onlineCount = onlineSnapshot.exists() ? Object.keys(onlineSnapshot.val()).length : 0;
-            
-            const adminCount = usersSnapshot.exists() ? 
-                Object.values(usersSnapshot.val()).filter(user => user.isAdmin).length : 0;
-            
-            alert(`
-📊 إحصائيات الدردشة:
-══════════════════
-👥 إجمالي الأعضاء: ${totalUsers}
-💬 إجمالي الرسائل: ${totalMessages}
-🟢 الأعضاء المتصلين: ${onlineCount}
-👑 عدد الإدمن: ${adminCount}
-══════════════════
-            `);
-            
-        } catch (error) {
-            console.error('خطأ في جلب الإحصائيات:', error);
-            showNotification('خطأ', 'حدث خطأ أثناء جلب الإحصائيات', 'error');
-        }
+  // مراقبة المستخدمين المكتومين
+  function monitorMutedUsers() {
+    onValue(mutedUsersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        mutedUsers = snapshot.val();
+      } else {
+        mutedUsers = {};
+      }
     });
+  }
 
-    // ========== نافذة الأوامر ==========
-
-    // إظهار نافذة الأوامر
-    async function showCommandModal(command, title) {
-        currentCommand = command;
-        commandModalTitle.textContent = title;
-        commandUsersList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المستخدمين...</div>';
-        commandModal.style.display = 'flex';
-        
-        try {
-            const usersSnapshot = await get(usersRef);
-            
-            if (!usersSnapshot.exists() || Object.keys(usersSnapshot.val()).length <= 1) {
-                commandUsersList.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><p>لا يوجد مستخدمون آخرون</p></div>';
-                return;
-            }
-            
-            let usersHTML = '';
-            const users = usersSnapshot.val();
-            
-            Object.entries(users).forEach(([userId, user]) => {
-                if (userId === currentUser.uid) return;
-                
-                usersHTML += `
-                    <div class="command-user-item" data-user-id="${userId}">
-                        <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=مستخدم&background=5865F2&color=fff'}" 
-                             class="command-user-avatar" 
-                             alt="${user.name}"
-                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=5865F2&color=fff'">
-                        <div class="command-user-info">
-                            <div class="command-user-name">${user.name} (${user.shortId})</div>
-                            <div class="command-user-email">${user.email || 'لا يوجد بريد'}</div>
-                        </div>
-                        ${user.isAdmin ? '<span style="color: var(--error);"><i class="fas fa-crown"></i></span>' : ''}
-                    </div>
-                `;
-            });
-            
-            commandUsersList.innerHTML = usersHTML;
-            
-            // إضافة حدث النقر للمستخدمين
-            document.querySelectorAll('.command-user-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const userId = item.dataset.userId;
-                    const userName = users[userId].name;
-                    const userShortId = users[userId].shortId;
-                    executeCommand(command, userId, userName, userShortId);
-                });
-            });
-            
-        } catch (error) {
-            console.error('خطأ في تحميل المستخدمين:', error);
-            commandUsersList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>حدث خطأ في تحميل المستخدمين</p></div>';
-        }
-    }
-
-    // إخفاء نافذة الأوامر
-    commandCancelBtn.addEventListener('click', () => {
-        commandModal.style.display = 'none';
-    });
-
-    // إغلاق النافذة عند النقر خارجها
-    commandModal.addEventListener('click', (e) => {
-        if (e.target === commandModal) {
-            commandModal.style.display = 'none';
-        }
-    });
-
-    // تنفيذ الأوامر
-    async function executeCommand(command, targetUserId, targetUserName, targetShortId) {
-        commandModal.style.display = 'none';
-        
-        try {
-            switch(command) {
-                case 'lock':
-                    const reason = prompt('أدخل سبب قفل الدردشة (اختياري):') || 'الدردشة مقفولة من قبل الإدمن';
-                    
-                    await update(chatSettingsRef, {
-                        isLocked: true,
-                        lockedBy: currentUser.shortId,
-                        lockReason: reason,
-                        lockedAt: serverTimestamp()
-                    });
-                    
-                    await push(messagesRef, {
-                        type: 'system',
-                        userId: 'system',
-                        userName: 'النظام',
-                        userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                        text: `🔒 قام ${currentUser.name} بقفل الدردشة: ${reason}`,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showNotification('نجاح', 'تم قفل الدردشة بنجاح', 'success');
-                    break;
-                    
-                case 'mute':
-                    const duration = prompt('أددد مدة الكتم بالدقائق:', '60');
-                    const muteDuration = parseInt(duration) || 60;
-                    const muteReason = prompt('أدخل سبب الكتم (اختياري):') || 'تم الكتم من قبل الإدمن';
-                    
-                    const muteUntil = new Date();
-                    muteUntil.setMinutes(muteUntil.getMinutes() + muteDuration);
-                    
-                    await set(ref(db, `mutedUsers/${targetUserId}`), {
-                        mutedBy: currentUser.shortId,
-                        mutedUntil: muteUntil.toISOString(),
-                        reason: muteReason,
-                        mutedAt: serverTimestamp(),
-                        userName: targetUserName,
-                        shortId: targetShortId
-                    });
-                    
-                    await push(messagesRef, {
-                        type: 'system',
-                        userId: 'system',
-                        userName: 'النظام',
-                        userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                        text: `🤫 قام ${currentUser.name} بكتم ${targetUserName} لمدة ${muteDuration} دقيقة: ${muteReason}`,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showNotification('نجاح', `تم كتم ${targetUserName} بنجاح`, 'success');
-                    break;
-                    
-                case 'unmute':
-                    await remove(ref(db, `mutedUsers/${targetUserId}`));
-                    
-                    await push(messagesRef, {
-                        type: 'system',
-                        userId: 'system',
-                        userName: 'النظام',
-                        userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                        text: `🎤 قام ${currentUser.name} بإزالة كتم ${targetUserName}`,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showNotification('نجاح', `تم إزالة كتم ${targetUserName} بنجاح`, 'success');
-                    break;
-                    
-                case 'role':
-                    await update(ref(db, `users/${targetUserId}`), {
-                        isAdmin: true
-                    });
-                    
-                    await push(messagesRef, {
-                        type: 'system',
-                        userId: 'system',
-                        userName: 'النظام',
-                        userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                        text: `👑 قام ${currentUser.name} بترقية ${targetUserName} إلى إدمن`,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showNotification('نجاح', `تم ترقية ${targetUserName} إلى إدمن`, 'success');
-                    break;
-                    
-                case 'unrole':
-                    await update(ref(db, `users/${targetUserId}`), {
-                        isAdmin: false
-                    });
-                    
-                    await push(messagesRef, {
-                        type: 'system',
-                        userId: 'system',
-                        userName: 'النظام',
-                        userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
-                        text: `👤 قام ${currentUser.name} بإزالة صلاحيات الإدمن من ${targetUserName}`,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showNotification('نجاح', `تم إزالة صلاحيات الإدمن من ${targetUserName}`, 'success');
-                    break;
-            }
-            
-        } catch (error) {
-            console.error(`خطأ في تنفيذ الأمر ${command}:`, error);
-            showNotification('خطأ', 'حدث خطأ أثناء تنفيذ الأمر', 'error');
-        }
-    }
-
-    // ========== وظائف عامة ==========
-
-    // حذف رسالة (يمكن الوصول إليها من زر الحذف في الرسائل)
-    window.deleteMessage = async function(messageId) {
-        if (!currentUser.isAdmin) {
-            showNotification('رفض', 'ليس لديك صلاحيات الإدمن', 'error');
-            return;
-        }
-        
-        if (confirm('هل تريد حذف هذه الرسالة؟')) {
-            try {
-                await remove(ref(db, `messages/${messageId}`));
-                showNotification('نجاح', 'تم حذف الرسالة', 'success');
-            } catch (error) {
-                console.error('خطأ في حذف الرسالة:', error);
-                showNotification('خطأ', 'حدث خطأ أثناء حذف الرسالة', 'error');
-            }
-        }
-    };
-
-    // تحديث حالة الاتصال
-    window.addEventListener('online', () => {
-        onlineStatus.textContent = 'متصل';
-        serverStatus.textContent = '✓ نشط';
-        serverStatus.style.color = 'var(--success)';
-        
-        // تحديث حالة المستخدم كمتصل
-        if (currentUser.uid) {
-            update(ref(db, `users/${currentUser.uid}`), {
-                online: true,
-                lastSeen: serverTimestamp()
-            });
-        }
-    });
+  // إظهار نافذة الأوامر
+  async function showCommandModal(command, title) {
+    currentCommand = command;
+    commandModalTitle.textContent = title;
+    commandUsersList.innerHTML = '';
     
-    window.addEventListener('offline', () => {
-        onlineStatus.textContent = 'غير متصل';
-        serverStatus.textContent = '✗ غير نشط';
-        serverStatus.style.color = 'var(--error)';
-    });
-
-    // الحفاظ على حالة الاتصال عند إغلاق الصفحة
-    window.addEventListener('beforeunload', async () => {
-        if (currentUser.uid) {
-            await remove(ref(db, `onlineUsers/${currentUser.uid}`));
-            await update(ref(db, `users/${currentUser.uid}`), {
-                online: false,
-                lastSeen: serverTimestamp()
-            });
+    try {
+      // جلب جميع المستخدمين من قاعدة البيانات
+      const usersSnapshot = await new Promise((resolve) => {
+        onValue(usersRef, (snapshot) => {
+          resolve(snapshot);
+        }, { onlyOnce: true });
+      });
+      
+      if (usersSnapshot.exists()) {
+        const users = usersSnapshot.val();
+        const userArray = [];
+        
+        for (const userId in users) {
+          const user = users[userId];
+          
+          // تخطي المستخدم الحالي
+          if (userId === currentUser.userId) continue;
+          
+          userArray.push({
+            id: userId,
+            shortId: user.shortId || 'N/A',
+            name: user.name,
+            avatar: user.avatar,
+            isAdmin: user.isAdmin || false
+          });
         }
-    });
+        
+        // عرض المستخدمين
+        userArray.forEach(user => {
+          const userItem = document.createElement('div');
+          userItem.className = 'command-user-item';
+          userItem.dataset.userId = user.id;
+          
+          userItem.innerHTML = `
+            <img src="${user.avatar}" class="command-user-avatar" alt="${user.name}"
+                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6d8ed1&color=fff'">
+            <div class="command-user-info">
+              <div class="command-user-name">${user.name} (${user.shortId})</div>
+              <div class="command-user-id">ID: ${user.id}</div>
+            </div>
+          `;
+          
+          userItem.addEventListener('click', () => {
+            executeCommand(command, user.id, user.name, user.shortId);
+            hideCommandModal();
+          });
+          
+          commandUsersList.appendChild(userItem);
+        });
+        
+        if (userArray.length === 0) {
+          commandUsersList.innerHTML = '<p style="text-align: center; color: #666;">لا يوجد مستخدمون آخرون</p>';
+        }
+      } else {
+        commandUsersList.innerHTML = '<p style="text-align: center; color: #666;">لا يوجد مستخدمون</p>';
+      }
+    } catch (error) {
+      console.error('خطأ في تحميل المستخدمين:', error);
+      commandUsersList.innerHTML = '<p style="text-align: center; color: #ff4757;">خطأ في تحميل المستخدمين</p>';
+    }
+    
+    commandModal.style.display = 'flex';
+  }
 
-    // بدء التطبيق
-    console.log('🚀 تطبيق Discond جاهز للتشغيل!');
+  // إخفاء نافذة الأوامر
+  function hideCommandModal() {
+    commandModal.style.display = 'none';
+    currentCommand = '';
+  }
+
+  // زر قفل الدردشة
+  lockBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    executeCommand('lock', null, null, null);
+  });
+
+  // زر فتح الدردشة
+  unlockBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    executeCommand('unlock', null, null, null);
+  });
+
+  // زر كتم مستخدم
+  muteBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    showCommandModal('mute', 'اختر المستخدم للكتم');
+  });
+
+  // زر إزالة كتم
+  unmuteBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    showCommandModal('unmute', 'اختر المستخدم لإزالة الكتم');
+  });
+
+  // زر ترقية لإدمن
+  roleBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    showCommandModal('role', 'اختر المستخدم لترقيته إلى إدمن');
+  });
+
+  // زر إزالة ترقية إدمن
+  unroleBtn.addEventListener('click', () => {
+    if (!currentUser.isAdmin) return;
+    showCommandModal('unrole', 'اختر المستخدم لإزالة صلاحيات الإدمن');
+  });
+
+  // زر مسح المحادثة
+  clearChatBtn.addEventListener('click', async () => {
+    if (!currentUser.isAdmin) return;
+    
+    if (confirm('هل أنت متأكد من مسح جميع الرسائل؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+      try {
+        await remove(messagesRef);
+        showNotification('تم مسح جميع الرسائل بنجاح', 'success');
+        
+        // إرسال رسالة نظام
+        await push(messagesRef, {
+          userId: 'system',
+          userName: 'النظام',
+          userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+          text: `🗑️ قام ${currentUser.name} (${currentUser.shortId}) بمسح جميع الرسائل.`,
+          timestamp: serverTimestamp(),
+          isSystem: true
+        });
+      } catch (error) {
+        console.error('خطأ في مسح الرسائل:', error);
+        showNotification('حدث خطأ في مسح الرسائل', 'error');
+      }
+    }
+  });
+
+  // إلغاء نافذة الأوامر
+  commandCancelBtn.addEventListener('click', hideCommandModal);
+
+  // تنفيذ الأوامر
+  async function executeCommand(command, targetUserId, targetUserName, targetShortId) {
+    try {
+      switch(command) {
+        case 'lock':
+          // قفل الدردشة للجميع إلا الإدمن
+          await set(chatSettingsRef, {
+            isLocked: true,
+            lockedBy: currentUser.shortId,
+            lockReason: 'الدردشة مقفولة من قبل الإدمن',
+            lockedUntil: null,
+            lockedAt: serverTimestamp()
+          });
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `🔒 قام ${currentUser.name} (${currentUser.shortId}) بقفل الدردشة. فقط الإدمن يستطيع الكتابة الآن.`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification('تم قفل الدردشة بنجاح', 'success');
+          break;
+          
+        case 'unlock':
+          // فتح الدردشة
+          await set(chatSettingsRef, {
+            isLocked: false,
+            lockedBy: null,
+            lockReason: null,
+            lockedUntil: null,
+            lockedAt: null
+          });
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `🔓 قام ${currentUser.name} (${currentUser.shortId}) بفتح الدردشة للجميع.`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification('تم فتح الدردشة بنجاح', 'success');
+          break;
+          
+        case 'mute':
+          if (!targetUserId) {
+            showCommandModal('mute', 'اختر المستخدم للكتم');
+            return;
+          }
+          
+          // كتم المستخدم لمدة ساعة
+          const muteUntil = new Date();
+          muteUntil.setHours(muteUntil.getHours() + 1);
+          
+          await set(ref(db, `mutedUsers/${targetUserId}`), {
+            mutedBy: currentUser.shortId,
+            mutedUntil: muteUntil.toISOString(),
+            mutedAt: serverTimestamp(),
+            userName: targetUserName,
+            shortId: targetShortId
+          });
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `🤫 قام ${currentUser.name} (${currentUser.shortId}) بكتم ${targetUserName} (${targetShortId}) لمدة ساعة.`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification(`تم كتم ${targetUserName} بنجاح`, 'success');
+          break;
+          
+        case 'unmute':
+          if (!targetUserId) {
+            showCommandModal('unmute', 'اختر المستخدم لإزالة الكتم');
+            return;
+          }
+          
+          // إزالة كتم المستخدم
+          await remove(ref(db, `mutedUsers/${targetUserId}`));
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `🎤 قام ${currentUser.name} (${currentUser.shortId}) بإزالة كتم ${targetUserName} (${targetShortId}).`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification(`تم إزالة كتم ${targetUserName} بنجاح`, 'success');
+          break;
+          
+        case 'role':
+          if (!targetUserId) {
+            showCommandModal('role', 'اختر المستخدم لترقيته إلى إدمن');
+            return;
+          }
+          
+          // ترقية المستخدم إلى إدمن
+          await set(ref(db, `users/${targetUserId}/isAdmin`), true);
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `👑 قام ${currentUser.name} (${currentUser.shortId}) بترقية ${targetUserName} (${targetShortId}) إلى إدمن.`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification(`تم ترقية ${targetUserName} إلى إدمن بنجاح`, 'success');
+          break;
+          
+        case 'unrole':
+          if (!targetUserId) {
+            showCommandModal('unrole', 'اختر المستخدم لإزالة صلاحيات الإدمن');
+            return;
+          }
+          
+          // إزالة صلاحيات الإدمن
+          await set(ref(db, `users/${targetUserId}/isAdmin`), false);
+          
+          await push(messagesRef, {
+            userId: 'system',
+            userName: 'النظام',
+            userAvatar: 'https://cdn-icons-png.flaticon.com/512/1828/1828640.png',
+            text: `👤 قام ${currentUser.name} (${currentUser.shortId}) بإزالة صلاحيات الإدمن من ${targetUserName} (${targetShortId}).`,
+            timestamp: serverTimestamp(),
+            isSystem: true
+          });
+          
+          showNotification(`تم إزالة صلاحيات الإدمن من ${targetUserName} بنجاح`, 'success');
+          break;
+      }
+      
+    } catch (error) {
+      console.error('خطأ في تنفيذ الأمر:', error);
+      showNotification('حدث خطأ في تنفيذ الأمر', 'error');
+    }
+  }
+
+  // إرسال رسالة
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    
+    if (!text) {
+      showNotification('الرجاء كتابة رسالة', 'error');
+      return;
+    }
+    
+    // التحقق من كتم المستخدم
+    if (mutedUsers[currentUser.userId]) {
+      const muteUntil = new Date(mutedUsers[currentUser.userId].mutedUntil);
+      const now = new Date();
+      
+      if (muteUntil > now) {
+        const diff = Math.ceil((muteUntil - now) / (1000 * 60));
+        showNotification(`أنت مكتوم لمدة ${diff} دقيقة أخرى`, 'error');
+        return;
+      } else {
+        await remove(ref(db, `mutedUsers/${currentUser.userId}`));
+      }
+    }
+    
+    // التحقق من قفل الدردشة
+    if (chatLockedUntil) {
+      const lockUntil = new Date(chatLockedUntil);
+      const now = new Date();
+      
+      if (lockUntil > now && !currentUser.isAdmin) {
+        showNotification('الدردشة مغلقة مؤقتاً. فقط الإدمن يستطيع الكتابة.', 'error');
+        return;
+      }
+    }
+    
+    try {
+      // إضافة الرسالة إلى Firebase
+      await push(messagesRef, {
+        userId: currentUser.userId,
+        shortId: currentUser.shortId,
+        userName: currentUser.name,
+        userAvatar: currentUser.avatar,
+        text: text,
+        timestamp: serverTimestamp(),
+        isAdmin: currentUser.isAdmin
+      });
+      
+      // مسح حقل الإدخال
+      messageInput.value = '';
+      messageInput.focus();
+      
+    } catch (error) {
+      console.error('خطأ في إرسال الرسالة:', error);
+      showNotification('حدث خطأ في إرسال الرسالة', 'error');
+    }
+  }
+
+  // إرسال بالزر
+  sendBtn.addEventListener('click', sendMessage);
+
+  // إرسال بالإنتر
+  messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // استقبال الرسائل الجديدة
+  const processedMessages = new Set();
+  
+  onChildAdded(messagesRef, (snapshot) => {
+    const message = snapshot.val();
+    const messageId = snapshot.key;
+    
+    // منع معالجة نفس الرسالة مرتين
+    if (processedMessages.has(messageId)) return;
+    processedMessages.add(messageId);
+    
+    // التحقق من كتم المستخدم المرسل
+    if (mutedUsers[message.userId] && !currentUser.isAdmin) {
+      const muteUntil = new Date(mutedUsers[message.userId].mutedUntil);
+      const now = new Date();
+      
+      if (muteUntil > now) {
+        return;
+      }
+    }
+    
+    // إنشاء عنصر الرسالة
+    const messageDiv = document.createElement('div');
+    
+    // إضافة ID فريد للرسالة
+    messageDiv.id = `msg-${messageId}`;
+    
+    if (message.userId === 'system') {
+      messageDiv.className = 'message system';
+    } else {
+      messageDiv.className = `message ${message.userId === currentUser.userId ? 'self' : 'other'} ${message.isAdmin ? 'admin' : ''}`;
+    }
+    
+    messageDiv.dataset.messageId = messageId;
+    messageDiv.dataset.userId = message.userId;
+    
+    // تنسيق الوقت
+    let timeString = 'الآن';
+    if (message.timestamp) {
+      const time = new Date(message.timestamp);
+      if (!isNaN(time.getTime())) {
+        timeString = time.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+    
+    // إذا كانت رسالة النظام
+    if (message.userId === 'system') {
+      messageDiv.innerHTML = `
+        <div class="message-content">
+          <div class="message-text">${message.text}</div>
+        </div>
+      `;
+    } else {
+      // استخدام الـ ID القصير في العرض
+      const displayName = `${message.userName} (${message.shortId || 'ID'})${message.isAdmin ? ' 👑' : ''}`;
+      
+      messageDiv.innerHTML = `
+        <img src="${message.userAvatar}" class="message-avatar" alt="${message.userName}"
+             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(message.userName)}&background=6d8ed1&color=fff'">
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-name">${displayName}</span>
+            <span class="message-time">${timeString}</span>
+          </div>
+          <div class="message-text">${message.text}</div>
+        </div>
+        ${currentUser.isAdmin && message.userId !== 'system' ? `<button class="delete-btn" onclick="deleteMessage('${messageId}')">×</button>` : ''}
+      `;
+    }
+    
+    // إزالة الرسائل القديمة إذا تجاوز العدد 200
+    const allMessages = messagesContainer.querySelectorAll('.message');
+    if (allMessages.length > 200) {
+      for (let i = 0; i < allMessages.length - 200; i++) {
+        allMessages[i].remove();
+      }
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  });
+
+  // دالة حذف الرسالة
+  window.deleteMessage = function(messageId) {
+    if (!currentUser.isAdmin) return;
+    
+    if (confirm('هل تريد حذف هذه الرسالة؟')) {
+      remove(ref(db, `messages/${messageId}`));
+      showNotification('تم حذف الرسالة', 'success');
+    }
+  };
+
+  // تحديث عدد الرسائل
+  onValue(messagesRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const messages = snapshot.val();
+      messageCountValue = Object.keys(messages).length;
+    } else {
+      messageCountValue = 0;
+    }
+    messageCount.textContent = `${messageCountValue} رسالة`;
+  });
+
+  // تحديث حالة الاتصال
+  window.addEventListener('online', () => {
+    onlineStatus.textContent = '✓ متصل';
+    onlineStatus.style.color = '';
+    
+    if (currentUser.userId) {
+      set(ref(db, `users/${currentUser.userId}/lastSeen`), serverTimestamp());
+    }
+  });
+  
+  window.addEventListener('offline', () => {
+    onlineStatus.textContent = '✗ غير متصل';
+    onlineStatus.style.color = '#ff4757';
+  });
 
 </script>
 
